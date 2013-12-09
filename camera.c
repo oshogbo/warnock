@@ -1,0 +1,301 @@
+#include <stdbool.h>
+#include <stdio.h>
+#include <math.h>
+
+#include <SDL/SDL.h>
+#include <GL/gl.h>
+
+# define PRESSEDKEY(k) if(pkeys[k]) \
+			for(i = 0; i < 4; i++)
+
+float d=2.0;
+
+typedef struct coords {
+	float x;
+	float y;
+	float z;
+} coords_t;
+
+typedef struct {
+	coords_t coord3d[8];
+} box_t;
+
+bool pkeys[512];
+bool trick = false;
+void
+init_window(int width, int height, const char *name, bool fs)
+{
+	Uint32 flags;
+
+	flags = SDL_OPENGL;
+	if (fs)
+		flags |= SDL_FULLSCREEN;
+
+	SDL_Init(SDL_INIT_VIDEO);
+	SDL_SetVideoMode(width, height, 0, flags);
+	SDL_WM_SetCaption(name, NULL);
+
+	glMatrixMode(GL_PROJECTION);
+	glViewport(0, 0, width, height);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearDepth(1.0);
+
+	glLoadIdentity();
+	//glOrtho(0.0, width / 10.0, height / 10.0, 0.0, 1, -1);
+	glOrtho(-2, 2, -2, 2, 1.0, -1.0);
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_POINT_SMOOTH);
+	glEnable(GL_TEXTURE_2D);
+}
+
+void
+draw_line_points(float x1, float y1, float x2, float y2)
+{
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(x1, y1);
+	glVertex2f(x2, y2);
+	glEnd();
+}
+
+void
+draw_line(coords_t c1, coords_t c2)
+{
+	float x1, y1, d1;
+	float x2, y2, d2;
+	float z1, z2;
+	float cx1, cy1;
+	float cx2, cy2;
+
+	z1 = c1.z;
+	z2 = c2.z;
+	cx1 = c1.x;
+	cx2 = c2.x;
+	cy1 = c1.y;
+	cy2 = c2.y;
+
+	if (z1 <= 0.01 || z2 <= 0.01)
+		return;
+
+	x1 = cx1 * d / z1;
+	y1 = cy1 * d / z1;
+
+	x2 = cx2 * d / z2;
+	y2 = cy2 * d / z2;
+
+	draw_line_points(x1, y1, x2, y2);
+}
+
+void
+draw_box(box_t b)
+{
+	draw_line(b.coord3d[0], b.coord3d[1]);
+	draw_line(b.coord3d[1], b.coord3d[2]);
+	draw_line(b.coord3d[2], b.coord3d[3]);
+	draw_line(b.coord3d[3], b.coord3d[0]);
+
+	draw_line(b.coord3d[4], b.coord3d[5]);
+	draw_line(b.coord3d[5], b.coord3d[6]);
+	draw_line(b.coord3d[6], b.coord3d[7]);
+	draw_line(b.coord3d[7], b.coord3d[4]);
+
+	draw_line(b.coord3d[0], b.coord3d[4]);
+	draw_line(b.coord3d[1], b.coord3d[5]);
+	draw_line(b.coord3d[2], b.coord3d[6]);
+	draw_line(b.coord3d[3], b.coord3d[7]);
+}
+
+void
+coord_translation(coords_t *c, float x, float y, float z) {
+	c->x += x;
+	c->y += y;
+	c->z += z;
+}
+
+void
+box_translation(box_t *b, float x, float y, float z)
+{
+	int i;
+
+	for (i = 0; i < 8; i++)
+		coord_translation(&b->coord3d[i], x,y,z);
+}
+
+void
+coord_rotate_x(coords_t *c, float alphax)
+{
+	c->y = c->y * cosf(alphax) - c->z * sinf(alphax);
+	c->z = c->y * sinf(alphax) + c->z * cosf(alphax);
+}
+
+void
+box_rotate_x(box_t *b, float alphax)
+{
+	int i;
+
+	for (i = 0; i < 8; i++)
+		coord_rotate_x(&b->coord3d[i], alphax * M_PI / 180);
+}
+
+void
+coord_rotate_y(coords_t *c, float alphax)
+{
+	c->x = c->x * cosf(alphax) + c->z * sinf(alphax);
+	c->z = - c->x * sinf(alphax) + c->z * cosf(alphax);
+}
+
+void
+box_rotate_y(box_t *b, float alphax)
+{
+	int i;
+
+	for (i = 0; i < 8; i++)
+		coord_rotate_y(&b->coord3d[i], alphax * M_PI / 180);
+}
+
+void
+coord_rotate_z(coords_t *c, float alphax)
+{
+	c->x = c->x * cosf(alphax) - c->y * sinf(alphax);
+	c->y = c->x * sinf(alphax) + c->y * cosf(alphax);
+}
+
+void
+box_rotate_z(box_t *b, float alphax)
+{
+	int i;
+
+	for (i = 0; i < 8; i++)
+		coord_rotate_z(&b->coord3d[i], alphax * M_PI / 180);
+}
+
+
+int
+main()
+{
+	int i;
+	float alphax, alphay, alphaz;
+	box_t b[4];
+
+	alphax = alphay = alphaz = 0;
+	b[0].coord3d[0].x = 1.0;
+	b[0].coord3d[0].y = 1.0;
+	b[0].coord3d[0].z = 1.0;
+
+	b[0].coord3d[1].x = 1.0;
+	b[0].coord3d[1].y = 2.0;
+	b[0].coord3d[1].z = 1.0;
+
+	b[0].coord3d[2].x = 2.0;
+	b[0].coord3d[2].y = 2.0;
+	b[0].coord3d[2].z = 1.0;
+
+	b[0].coord3d[3].x = 2.0;
+	b[0].coord3d[3].y = 1.0;
+	b[0].coord3d[3].z = 1.0;
+
+	b[0].coord3d[4].x = 1.0;
+	b[0].coord3d[4].y = 1.0;
+	b[0].coord3d[4].z = 2.0;
+
+	b[0].coord3d[5].x = 1.0;
+	b[0].coord3d[5].y = 2.0;
+	b[0].coord3d[5].z = 2.0;
+
+	b[0].coord3d[6].x = 2.0;
+	b[0].coord3d[6].y = 2.0;
+	b[0].coord3d[6].z = 2.0;
+
+	b[0].coord3d[7].x = 2.0;
+	b[0].coord3d[7].y = 1.0;
+	b[0].coord3d[7].z = 2.0;
+
+	memcpy(&b[1], &b[0], sizeof(b[0]));
+	memcpy(&b[2], &b[0], sizeof(b[0]));
+	memcpy(&b[3], &b[0], sizeof(b[0]));
+
+	box_translation(&b[0], 0, -3, 2);
+	box_translation(&b[1], -3, -3, 2);
+	box_translation(&b[2], 0, -3, 4);
+	box_translation(&b[3], -3, -3, 4);
+
+	init_window(600, 480, "gk", false);
+
+	while (true)
+	{
+		SDL_Event ev;
+
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glLoadIdentity();
+
+		for (i = 0; i < 4; i++)
+		{
+			switch(i)
+			{
+			case 0: glColor3f(1.0, 0.0, 0.0); break;
+			case 1: glColor3f(1.0, 1.0, 0.0); break;
+			case 2: glColor3f(0.0, 0.0, 1.0); break;
+			case 3: glColor3f(0.0, 1.0, 0.0); break;
+			}
+			draw_box(b[i]);
+		}
+
+		memset(&ev, 0, sizeof(ev));
+		while(SDL_PollEvent(&ev))
+		{
+			switch(ev.type)
+			{
+				case SDL_KEYDOWN:
+					pkeys[ev.key.keysym.sym] = true;
+					break;
+				case SDL_KEYUP:
+					pkeys[ev.key.keysym.sym] = false;
+					break;
+				case SDL_QUIT:
+					SDL_Quit();
+					exit(1);
+			}
+		}
+
+		/* EVENTS */
+		PRESSEDKEY(SDLK_UP)
+				box_translation(b + i, 0, 0, -0.01);
+		PRESSEDKEY(SDLK_DOWN)
+				box_translation(b + i, 0, 0, 0.01);
+		PRESSEDKEY(SDLK_LEFT)
+				box_translation(b + i, 0.01, 0, 0);
+		PRESSEDKEY(SDLK_RIGHT)
+				box_translation(b + i, -0.01, 0, 0);
+		PRESSEDKEY(SDLK_PAGEUP)
+				box_translation(b + i, 0, 0.01, 0);
+		PRESSEDKEY(SDLK_PAGEDOWN)
+				box_translation(b + i, 0, -0.01, 0);
+		PRESSEDKEY(SDLK_w)
+				box_rotate_x(b + i, 0.05);
+		PRESSEDKEY(SDLK_s)
+				box_rotate_x(b + i, -0.05);
+		PRESSEDKEY(SDLK_a)
+				box_rotate_y(b + i, 0.05);
+		PRESSEDKEY(SDLK_d)
+				box_rotate_y(b + i, -0.05);
+		PRESSEDKEY(SDLK_e)
+				box_rotate_z(b + i, 0.05);
+		PRESSEDKEY(SDLK_q)
+				box_rotate_z(b + i, -0.05);
+		PRESSEDKEY(SDLK_r)
+				d += 0.001;
+		PRESSEDKEY(SDLK_f)
+				d -= 0.001;
+				if (d < 0)
+					d = 0.001;
+		PRESSEDKEY(SDLK_1)
+				trick = false;
+		PRESSEDKEY(SDLK_2)
+				trick = true;
+
+		SDL_GL_SwapBuffers();
+	}
+
+	return (0);
+}
