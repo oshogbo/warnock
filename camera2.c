@@ -105,6 +105,9 @@ draw_line(coords_t c1, coords_t c2)
 void
 draw_plane(coords_t c1, coords_t c2, coords_t c3, coords_t c4)
 {
+	// WARNOCK
+	// DEPTH TEST
+	
 	draw_plane_points(c1.xp, c1.yp, c2.xp, c2.yp, c3.xp, c3.yp, c4.xp, c4.yp);
 }
 
@@ -139,28 +142,12 @@ draw_box(box_t b)
 {
 	project_plane(&b.coord3d[0], &b.coord3d[1], &b.coord3d[2], &b.coord3d[3]);
 	project_plane(&b.coord3d[4], &b.coord3d[5], &b.coord3d[6], &b.coord3d[7]);
-
-	/*draw_line(b.coord3d[0], b.coord3d[1]);
-	draw_line(b.coord3d[1], b.coord3d[2]);
-	draw_line(b.coord3d[2], b.coord3d[3]);
-	draw_line(b.coord3d[3], b.coord3d[0]);
-
-	draw_line(b.coord3d[4], b.coord3d[5]);
-	draw_line(b.coord3d[5], b.coord3d[6]);
-	draw_line(b.coord3d[6], b.coord3d[7]);
-	draw_line(b.coord3d[7], b.coord3d[4]);
-	
-	draw_line(b.coord3d[0], b.coord3d[4]);
-	draw_line(b.coord3d[1], b.coord3d[5]);
-	draw_line(b.coord3d[2], b.coord3d[6]);
-	draw_line(b.coord3d[3], b.coord3d[7]);*/
 	
 	draw_plane(b.coord3d[0], b.coord3d[1], b.coord3d[2], b.coord3d[3]);
 	draw_plane(b.coord3d[4], b.coord3d[5], b.coord3d[6], b.coord3d[7]);
-	draw_plane(b.coord3d[0], b.coord3d[1], b.coord3d[4], b.coord3d[5]);
-	draw_plane(b.coord3d[2], b.coord3d[3], b.coord3d[6], b.coord3d[7]);
-	draw_plane(b.coord3d[1], b.coord3d[2], b.coord3d[5], b.coord3d[6]);
-	draw_plane(b.coord3d[3], b.coord3d[0], b.coord3d[7], b.coord3d[4]);
+	
+	draw_plane(b.coord3d[1], b.coord3d[2], b.coord3d[6], b.coord3d[5]);
+	draw_plane(b.coord3d[0], b.coord3d[3], b.coord3d[7], b.coord3d[4]);
 }
 
 void
