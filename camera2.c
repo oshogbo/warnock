@@ -5,6 +5,8 @@
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 
+#define BACKGROUND 4
+
 # define PRESSEDKEY(k) if(pkeys[k]) \
                         for(i = 0; i < 4; i++)
 
@@ -24,6 +26,56 @@ typedef struct {
 
 bool pkeys[512];
 bool trick = false;
+
+// http://alienryderflex.com/intersect/
+int 
+lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx, float Cy, float Dx, float Dy, float *X, float *Y)
+{
+
+  float distAB, theCos, theSin, newX, ABpos ;
+
+  //  Fail if either line segment is zero-length.
+  if (Ax==Bx && Ay==By || Cx==Dx && Cy==Dy) return 0;
+
+  //  Fail if the segments share an end-point.
+  if (Ax==Cx && Ay==Cy || Bx==Cx && By==Cy
+  ||  Ax==Dx && Ay==Dy || Bx==Dx && By==Dy) {
+    return 0; }
+
+  //  (1) Translate the system so that point A is on the origin.
+  Bx-=Ax; By-=Ay;
+  Cx-=Ax; Cy-=Ay;
+  Dx-=Ax; Dy-=Ay;
+
+  //  Discover the length of segment A-B.
+  distAB=sqrt(Bx*Bx+By*By);
+
+  //  (2) Rotate the system so that point B is on the positive X axis.
+  theCos=Bx/distAB;
+  theSin=By/distAB;
+  newX=Cx*theCos+Cy*theSin;
+  Cy  =Cy*theCos-Cx*theSin; Cx=newX;
+  newX=Dx*theCos+Dy*theSin;
+  Dy  =Dy*theCos-Dx*theSin; Dx=newX;
+
+  //  Fail if segment C-D doesn't cross line A-B.
+  if (Cy<0. && Dy<0. || Cy>=0. && Dy>=0.) return 0;
+
+  //  (3) Discover the position of the intersection point along line A-B.
+  ABpos=Dx+(Cx-Dx)*Dy/(Dy-Cy);
+
+  //  Fail if segment C-D crosses line A-B outside of segment A-B.
+  if (ABpos<0. || ABpos>distAB) return 0;
+
+  //  (4) Apply the discovered position to line A-B in the original coordinate system.
+  *X=Ax+ABpos*theCos;
+  *Y=Ay+ABpos*theSin;
+
+  //  Success.
+  return 1; 
+}
+
+
 void
 init_window(int width, int height, const char *name, bool fs)
 {
@@ -105,9 +157,6 @@ draw_line(coords_t c1, coords_t c2)
 void
 draw_plane(coords_t c1, coords_t c2, coords_t c3, coords_t c4)
 {
-	// WARNOCK
-	// DEPTH TEST
-	
 	draw_plane_points(c1.xp, c1.yp, c2.xp, c2.yp, c3.xp, c3.yp, c4.xp, c4.yp);
 }
 
@@ -137,17 +186,94 @@ project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
 	c4->yp = c4->y * d / c4->z;
 }
 
+int
+checkIntersection(box_t *b, float wx1, float wy1, float wx2, float wy2) {
+	
+	int type = 0;
+	
+	// Czy jakakolwiek linia sie przecina z jakakolwiek inna linia kwadrata - dla jednej plaszczyzny!
+	if(lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy1, wx1, wy2) == 0 &&
+	   lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy2, wx2, wy2) == 0 &&
+	   lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy2, wx2, wy1) == 0 &&
+	   lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy1, wx1, wy1) == 0 &&
+	   lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy1, wx1, wy2) == 0 &&
+	   lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy2, wx2, wy2) == 0 &&
+	   lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy2, wx2, wy1) == 0 &&
+	   lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy1, wx1, wy1) == 0 &&
+	   lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy1, wx1, wy2) == 0 &&
+	   lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy2, wx2, wy2) == 0 &&
+	   lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy2, wx2, wy1) == 0 &&
+	   lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy1, wx1, wy1) == 0 &&
+	   lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy1, wx1, wy2) == 0 &&
+	   lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy2, wx2, wy2) == 0 &&
+	   lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy2, wx2, wy1) == 0 &&
+	   lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy1, wx1, wy1) == 0 )
+	   type = 0;
+	else if () {
+	
+	}
+}
+
 void
-draw_box(box_t b)
+draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
-	project_plane(&b.coord3d[0], &b.coord3d[1], &b.coord3d[2], &b.coord3d[3]);
-	project_plane(&b.coord3d[4], &b.coord3d[5], &b.coord3d[6], &b.coord3d[7]);
+	box_t *b = NULL;
+	int i = 0;
 	
-	draw_plane(b.coord3d[0], b.coord3d[1], b.coord3d[2], b.coord3d[3]);
-	draw_plane(b.coord3d[4], b.coord3d[5], b.coord3d[6], b.coord3d[7]);
+	for (i = 0; i < 4; i++) {
+		b = &boxes[i];
+		
+		
+		if (checkIntersection() == 0) { // Plane outside window
+		
+		}
+		else if (checkIntersection() == 1) { // Plane surrounds window
+		
+		}
+		else if (lineSegmentIntersection() == 2) { // Plane partially meets window
+		
+		}
+		else if (lineSegmentIntersection() == 3) { // Plane inside window
+		
+		}
+	}
+	/*draw_plane(b->coord3d[0], b->coord3d[1], b->coord3d[2], b->coord3d[3]);
+	draw_plane(b->coord3d[4], b->coord3d[5], b->coord3d[6], b->coord3d[7]);
 	
-	draw_plane(b.coord3d[1], b.coord3d[2], b.coord3d[6], b.coord3d[5]);
-	draw_plane(b.coord3d[0], b.coord3d[3], b.coord3d[7], b.coord3d[4]);
+	draw_plane(b->coord3d[1], b->coord3d[2], b->coord3d[6], b->coord3d[5]);
+	draw_plane(b->coord3d[0], b->coord3d[3], b->coord3d[7], b->coord3d[4]);*/
+}
+
+void
+set_color(int num)
+{
+	switch(i)
+	{
+		case 0: glColor3f(1.0, 0.0, 0.0); break;
+		case 1: glColor3f(1.0, 1.0, 0.0); break;
+		case 2: glColor3f(0.0, 0.0, 1.0); break;
+		case 3: glColor3f(0.0, 1.0, 0.0); break;
+		case 4: glColor3f(0.0, 0.0, 0.0); break;
+	}
+}
+
+void
+draw_scene(box_t *boxes)
+{
+	int i = 0;
+	box_t *b = NULL;
+	
+	// Project all scene
+	for (i = 0; i < 4; i++)
+	{
+		b = &boxes[i];
+		project_plane(&b->coord3d[0], &b->coord3d[1], &b->coord3d[2], &b->coord3d[3]);
+		project_plane(&b->coord3d[4], &b->coord3d[5], &b->coord3d[6], &b->coord3d[7]);
+	}
+	
+	// Draw boxes with Warnock Depth Test
+	draw_boxes(boxes, -2, 2, -2, 2);
+	
 }
 
 void
@@ -273,17 +399,7 @@ main()
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glLoadIdentity();
 
-			for (i = 0; i < 4; i++)
-			{
-					switch(i)
-					{
-					case 0: glColor3f(1.0, 0.0, 0.0); break;
-					case 1: glColor3f(1.0, 1.0, 0.0); break;
-					case 2: glColor3f(0.0, 0.0, 1.0); break;
-					case 3: glColor3f(0.0, 1.0, 0.0); break;
-					}
-					draw_box(b[i]);
-			}
+			draw_scene(b);
 
 			memset(&ev, 0, sizeof(ev));
 			while(SDL_PollEvent(&ev))
