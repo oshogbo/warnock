@@ -35,12 +35,14 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx, float 
 	float distAB, theCos, theSin, newX, ABpos ;
 
 	//  Fail if either line segment is zero-length.
-	if (Ax==Bx && Ay==By || Cx==Dx && Cy==Dy) return 0;
+	if (Ax==Bx && Ay==By || Cx==Dx && Cy==Dy)
+		return 0;
 
 	//  Fail if the segments share an end-point.
-	if (Ax==Cx && Ay==Cy || Bx==Cx && By==Cy
-			||  Ax==Dx && Ay==Dy || Bx==Dx && By==Dy) {
-		return 0; }
+	if (Ax==Cx && Ay==Cy || Bx==Cx && By==Cy ||
+	    Ax==Dx && Ay==Dy || Bx==Dx && By==Dy) {
+		return 0;
+	}
 
 	//  (1) Translate the system so that point A is on the origin.
 	Bx-=Ax; By-=Ay;
@@ -59,20 +61,22 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx, float 
 	Dy  =Dy*theCos-Dx*theSin; Dx=newX;
 
 	//  Fail if segment C-D doesn't cross line A-B.
-	if (Cy<0. && Dy<0. || Cy>=0. && Dy>=0.) return 0;
+	if (Cy<0. && Dy<0. || Cy>=0. && Dy>=0.)
+	    return 0;
 
 	//  (3) Discover the position of the intersection point along line A-B.
 	ABpos=Dx+(Cx-Dx)*Dy/(Dy-Cy);
 
 	//  Fail if segment C-D crosses line A-B outside of segment A-B.
-	if (ABpos<0. || ABpos>distAB) return 0;
+	if (ABpos<0. || ABpos>distAB)
+	    return 0;
 
 	//  (4) Apply the discovered position to line A-B in the original coordinate system.
 	*X=Ax+ABpos*theCos;
 	*Y=Ay+ABpos*theSin;
 
 	//  Success.
-	return 1; 
+	return 1;
 }
 
 
@@ -187,32 +191,35 @@ project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
 }
 
 int
-checkIntersection(box_t *b, float wx1, float wy1, float wx2, float wy2) {
-
-	int type = 0;
+checkIntersection(box_t *b, float wx1, float wy1, float wx2, float wy2)
+{
 	float x,y;
+	bool p[16];
+	bool r;
+
+	p[0] = !lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy1, wx1, wy2, &x, &y);
+	p[1] = !lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy2, wx2, wy2, &x, &y);
+	p[2] = !lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy2, wx2, wy1, &x, &y);
+	p[3] = !lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy1, wx1, wy1, &x, &y);
+	p[4] = !lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy1, wx1, wy2, &x, &y);
+	p[5] = !lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy2, wx2, wy2, &x, &y);
+	p[6] = !lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy2, wx2, wy1, &x, &y);
+	p[7] = !lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy1, wx1, wy1, &x, &y);
+	p[8] = !lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy1, wx1, wy2, &x, &y);
+	p[9] = !lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy2, wx2, wy2, &x, &y);
+	p[10] = !lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy2, wx2, wy1, &x, &y);
+	p[11] = !lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy1, wx1, wy1, &x, &y);
+	p[12] = !lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy1, wx1, wy2, &x, &y);
+	p[13] = !lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy2, wx2, wy2, &x, &y);
+	p[14] = !lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy2, wx2, wy1, &x, &y);
+	p[15] = !lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy1, wx1, wy1, &x, &y);
 
 	// Czy jakakolwiek linia sie przecina z jakakolwiek inna linia kwadrata - dla jednej plaszczyzny!
-	if (lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy1, wx1, wy2, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy2, wx2, wy2, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy2, wx2, wy1, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy1, wx1, wy1, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy1, wx1, wy2, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy2, wx2, wy2, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy2, wx2, wy1, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy1, wx1, wy1, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy1, wx1, wy2, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy2, wx2, wy2, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy2, wx2, wy1, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy1, wx1, wy1, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy1, wx1, wy2, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy2, wx2, wy2, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy2, wx2, wy1, &x, &y) == 0 &&
-	    lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy1, wx1, wy1, &x, &y) == 0) {
-		type = 0;
-	} else if () {
+	for (i = 0, r = 1; i < 16; i++)
+		r &= p[i];
 
-	}
+	if (r == 0)
+		return 0;
 }
 
 void
@@ -220,22 +227,25 @@ draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
 	box_t *b = NULL;
 	int i = 0;
+	int type;
 
 	for (i = 0; i < 4; i++) {
 		b = &boxes[i];
+		type = checkIntersection(boxes, wx1, wy1, wx2, wy2);
 
-
-		if (checkIntersection() == 0) { // Plane outside window
-
-		}
-		else if (checkIntersection() == 1) { // Plane surrounds window
-
-		}
-		else if (lineSegmentIntersection() == 2) { // Plane partially meets window
-
-		}
-		else if (lineSegmentIntersection() == 3) { // Plane inside window
-
+		switch (type) {
+		case 0:
+			// Plane outside window
+			break;
+		case 1:
+			// Plane surrounds window
+			break;
+		case 2:
+			// Plane partially meets window
+			break;
+		case 3:
+			// Plane inside window
+			break;
 		}
 	}
 	/*draw_plane(b->coord3d[0], b->coord3d[1], b->coord3d[2], b->coord3d[3]);
