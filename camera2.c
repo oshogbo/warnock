@@ -190,57 +190,60 @@ project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
 	c4->yp = c4->y * d / c4->z;
 }
 
+/*
+ * 0 - polygon don't have commo part with qube and is not in qube
+ * 1 - polygon is in qube or part of polygon is in qube
+ * 2 - polygon surrounds qube
+ */
 int
-checkIntersection(box_t *b, float wx1, float wy1, float wx2, float wy2)
+classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 {
 	float x,y;
-	bool p[16];
 	bool r;
 	int i;
 
-	p[0] = lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
-	    b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy1, wx1, wy2, &x, &y);
-	p[1] = lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
-	    b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy2, wx2, wy2, &x, &y);
-	p[2] = lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
-	    b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy2, wx2, wy1, &x, &y);
-	p[3] = lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
-	    b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy1, wx1, wy1, &x, &y);
-	p[4] = lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
-	    b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy1, wx1, wy2, &x, &y);
-	p[5] = lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
-	    b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy2, wx2, wy2, &x, &y);
-	p[6] = lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
-	    b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy2, wx2, wy1, &x, &y);
-	p[7] = lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
-	    b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy1, wx1, wy1, &x, &y);
-	p[8] = lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
-	    b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy1, wx1, wy2, &x, &y);
-	p[9] = lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
-	    b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy2, wx2, wy2, &x, &y);
-	p[10] = lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
-	    b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy2, wx2, wy1, &x, &y);
-	p[11] = lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
-	    b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy1, wx1, wy1, &x, &y);
-	p[12] = lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
-	    b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy1, wx1, wy2, &x, &y);
-	p[13] = lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
-	    b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy2, wx2, wy2, &x, &y);
-	p[14] = lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
-	    b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy2, wx2, wy1, &x, &y);
-	p[15] = lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
-	    b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy1, wx1, wy1, &x, &y);
+	/*
+	 * 0 - some of line are interaction with qube line
+	 * 1 - none of line are interaction with qube line
+	 */
+	r = lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
+	    b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
+	    b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
+	    b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
+	    b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
+	    b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
+	    b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
+	    b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
+	    b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
+	    b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
+	    b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
+	    b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
+	    b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
+	    b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
+	    b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
+	    b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
+	    b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
 
-	for (i = 0, r = 1; i < 16; i++) {
-		/*
-		 * Czy jakakolwiek linia sie przecina z jakakolwiek
-		 * inna linia kwadrata - dla jednej plaszczyzny!
-		 */
-		r &= (p[i] == 0);
-	}
-
+	/* part of polygon is in qube */
 	if (r == 0)
-		return 0;
+		return 1;
+
+	return 0;
 }
 
 void
@@ -252,7 +255,7 @@ draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 
 	for (i = 0; i < 4; i++) {
 		b = &boxes[i];
-		type = checkIntersection(boxes, wx1, wy1, wx2, wy2);
+		type = classification_qube(boxes, wx1, wy1, wx2, wy2);
 
 		switch (type) {
 		case 0:
