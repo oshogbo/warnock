@@ -10,7 +10,7 @@
 # define PRESSEDKEY(k) if(pkeys[k]) \
 	for(i = 0; i < 4; i++)
 
-float d=2.0;
+float d = 2.0;
 
 typedef struct coords {
 	float x;
@@ -210,8 +210,8 @@ project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
 
 /*
  * 0 - polygon don't have commo part with qube and is not in qube
- * 1 - polygon is in qube
- * 2 - part of polygon is in qube
+ * 1 - part of polygon is in qube
+ * 2 - polygon is in qube
  * 3 - polygon surrounds qube
  */
 int
@@ -311,12 +311,12 @@ draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 				pow ++;
 				break;
 			case 1:
-				/* Plane inside window */
-				piw ++;
-				break;
-			case 2:
 				/* Plane partially meets window */
 				ppmw ++;
+				break;
+			case 2:
+				/* Plane inside window */
+				piw ++;
 				break;
 			case 3:
 				/* Plane surrounds window */
@@ -326,15 +326,16 @@ draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 		}
 	}
 
-	hx = wx2 - wx1 / 2;
-	hy = wy2 - wy1 / 2;
-	printf("%i %i %i %i %g %g %g %g\n", piw, ppmw, psw, pow, wx1, wx2, hx, hy);
-	if (hx > 0.001 && hy > 0.001 && (piw > 1 || ppmw > 1 || psw > 1)) {
+	hx = (wx1 + wx2) / 2;
+	hy = (wy1 + wy2) / 2;
+	printf("%i %i %i %i wx=%g wx=%g %g %g\n", piw, ppmw, psw, pow, wx1, wx2, hx, hy);
+	if (wx2 - wx1 > 0.1 && wy2 - wy1 > 0.1 &&
+	    (piw > 1 || ppmw > 1 || psw > 1)) {
 		/* continue Warnock */
-		draw_boxes(boxes, wx1, hx, wy1, hy);
-		draw_boxes(boxes, wx1, hx, hy, wy2);
-		draw_boxes(boxes, hx, wx2, wy1, hy);
-		draw_boxes(boxes, hx, wx2, hy, wy2);
+		draw_boxes(boxes, wx1, wy1, hx, hy);
+		draw_boxes(boxes, wx1, hy, hx, wy2);
+		draw_boxes(boxes, hx, wy1, wx2, hy);
+		draw_boxes(boxes, hx, hy, wx2, wy2);
 		return;
 	}
 
