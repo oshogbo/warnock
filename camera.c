@@ -326,15 +326,15 @@ draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 		}
 	}
 
-	hx = (wx2 - wx1) / 2;
-	hy = (wy2 - wy1) / 2;
-	printf("%i %i %i %i %g %g\n", piw, ppmw, psw, pow, wx1, wx2);
-	if (hx > 0.01 && hy > 0.01 && (piw > 1 || ppmw > 1 || psw > 1)) {
+	hx = wx2 - wx1 / 2;
+	hy = wy2 - wy1 / 2;
+	printf("%i %i %i %i %g %g %g %g\n", piw, ppmw, psw, pow, wx1, wx2, hx, hy);
+	if (hx > 0.001 && hy > 0.001 && (piw > 1 || ppmw > 1 || psw > 1)) {
 		/* continue Warnock */
-		draw_boxes(boxes, wx1, wx1 + hx, wy1, wy1 + hy);
-		draw_boxes(boxes, wx1, wx1 + hx, wy1 + hy, wy2);
-		draw_boxes(boxes, wx1 + hx, wx2, wy1, wy1 + hy);
-		draw_boxes(boxes, wx1 + hx, wx2, wy1 + hy, wy2);
+		draw_boxes(boxes, wx1, hx, wy1, hy);
+		draw_boxes(boxes, wx1, hx, hy, wy2);
+		draw_boxes(boxes, hx, wx2, wy1, hy);
+		draw_boxes(boxes, hx, wx2, hy, wy2);
 		return;
 	}
 
