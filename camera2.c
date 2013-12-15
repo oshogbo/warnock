@@ -193,8 +193,9 @@ project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
 
 /*
  * 0 - polygon don't have commo part with qube and is not in qube
- * 1 - polygon is in qube or part of polygon is in qube
- * 2 - polygon surrounds qube
+ * 1 - polygon is in qube
+ * 2 - part of polygon is in qube
+ * 3 - polygon surrounds qube
  */
 int
 classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
@@ -268,7 +269,7 @@ classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 	 */
 	if (b->coord[0].xp < bx && b->coord[0] > sx &&
 	    b->coord[0].yp > by && b->coord[0] > sy)
-		return 1;
+		return 2;
 
 	/*
 	 * we know that no line is cut qube, so if two points of polygon are one
