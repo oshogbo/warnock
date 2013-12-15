@@ -8,71 +8,71 @@
 #define BACKGROUND 4
 
 # define PRESSEDKEY(k) if(pkeys[k]) \
-                        for(i = 0; i < 4; i++)
+	for(i = 0; i < 4; i++)
 
 float d=2.0;
 
 typedef struct coords {
-        float x;
-        float y;
-        float z;
-		float xp;
-		float yp;
+	float x;
+	float y;
+	float z;
+	float xp;
+	float yp;
 } coords_t;
 
 typedef struct {
-        coords_t coord3d[8];
+	coords_t coord3d[8];
 } box_t;
 
 bool pkeys[512];
 bool trick = false;
 
 // http://alienryderflex.com/intersect/
-int 
+int
 lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx, float Cy, float Dx, float Dy, float *X, float *Y)
 {
 
-  float distAB, theCos, theSin, newX, ABpos ;
+	float distAB, theCos, theSin, newX, ABpos ;
 
-  //  Fail if either line segment is zero-length.
-  if (Ax==Bx && Ay==By || Cx==Dx && Cy==Dy) return 0;
+	//  Fail if either line segment is zero-length.
+	if (Ax==Bx && Ay==By || Cx==Dx && Cy==Dy) return 0;
 
-  //  Fail if the segments share an end-point.
-  if (Ax==Cx && Ay==Cy || Bx==Cx && By==Cy
-  ||  Ax==Dx && Ay==Dy || Bx==Dx && By==Dy) {
-    return 0; }
+	//  Fail if the segments share an end-point.
+	if (Ax==Cx && Ay==Cy || Bx==Cx && By==Cy
+			||  Ax==Dx && Ay==Dy || Bx==Dx && By==Dy) {
+		return 0; }
 
-  //  (1) Translate the system so that point A is on the origin.
-  Bx-=Ax; By-=Ay;
-  Cx-=Ax; Cy-=Ay;
-  Dx-=Ax; Dy-=Ay;
+	//  (1) Translate the system so that point A is on the origin.
+	Bx-=Ax; By-=Ay;
+	Cx-=Ax; Cy-=Ay;
+	Dx-=Ax; Dy-=Ay;
 
-  //  Discover the length of segment A-B.
-  distAB=sqrt(Bx*Bx+By*By);
+	//  Discover the length of segment A-B.
+	distAB=sqrt(Bx*Bx+By*By);
 
-  //  (2) Rotate the system so that point B is on the positive X axis.
-  theCos=Bx/distAB;
-  theSin=By/distAB;
-  newX=Cx*theCos+Cy*theSin;
-  Cy  =Cy*theCos-Cx*theSin; Cx=newX;
-  newX=Dx*theCos+Dy*theSin;
-  Dy  =Dy*theCos-Dx*theSin; Dx=newX;
+	//  (2) Rotate the system so that point B is on the positive X axis.
+	theCos=Bx/distAB;
+	theSin=By/distAB;
+	newX=Cx*theCos+Cy*theSin;
+	Cy  =Cy*theCos-Cx*theSin; Cx=newX;
+	newX=Dx*theCos+Dy*theSin;
+	Dy  =Dy*theCos-Dx*theSin; Dx=newX;
 
-  //  Fail if segment C-D doesn't cross line A-B.
-  if (Cy<0. && Dy<0. || Cy>=0. && Dy>=0.) return 0;
+	//  Fail if segment C-D doesn't cross line A-B.
+	if (Cy<0. && Dy<0. || Cy>=0. && Dy>=0.) return 0;
 
-  //  (3) Discover the position of the intersection point along line A-B.
-  ABpos=Dx+(Cx-Dx)*Dy/(Dy-Cy);
+	//  (3) Discover the position of the intersection point along line A-B.
+	ABpos=Dx+(Cx-Dx)*Dy/(Dy-Cy);
 
-  //  Fail if segment C-D crosses line A-B outside of segment A-B.
-  if (ABpos<0. || ABpos>distAB) return 0;
+	//  Fail if segment C-D crosses line A-B outside of segment A-B.
+	if (ABpos<0. || ABpos>distAB) return 0;
 
-  //  (4) Apply the discovered position to line A-B in the original coordinate system.
-  *X=Ax+ABpos*theCos;
-  *Y=Ay+ABpos*theSin;
+	//  (4) Apply the discovered position to line A-B in the original coordinate system.
+	*X=Ax+ABpos*theCos;
+	*Y=Ay+ABpos*theSin;
 
-  //  Success.
-  return 1; 
+	//  Success.
+	return 1; 
 }
 
 
@@ -83,7 +83,7 @@ init_window(int width, int height, const char *name, bool fs)
 
 	flags = SDL_OPENGL;
 	if (fs)
-			flags |= SDL_FULLSCREEN;
+		flags |= SDL_FULLSCREEN;
 
 	SDL_Init(SDL_INIT_VIDEO);
 	SDL_SetVideoMode(width, height, 0, flags);
@@ -136,20 +136,20 @@ draw_line(coords_t c1, coords_t c2)
 	z1 = c1.z;
 	z2 = c2.z;
 	/*cx1 = c1.x;
-	cx2 = c2.x;
-	cy1 = c1.y;
-	cy2 = c2.y;*/
+	  cx2 = c2.x;
+	  cy1 = c1.y;
+	  cy2 = c2.y;*/
 
 	if (z1 <= 0.01 || z2 <= 0.01)
-			return;
+		return;
 
 	/*x1 = cx1 * d / z1;
-	y1 = cy1 * d / z1;
+	  y1 = cy1 * d / z1;
 
-	x2 = cx2 * d / z2;
-	y2 = cy2 * d / z2;
+	  x2 = cx2 * d / z2;
+	  y2 = cy2 * d / z2;
 
-	draw_line_points(x1, y1, x2, y2);*/
+	  draw_line_points(x1, y1, x2, y2);*/
 	//project_line(&c1, &c2);
 	draw_line_points(c1.xp, c1.yp, c2.xp, c2.yp);
 }
@@ -165,7 +165,7 @@ project_line(coords_t *c1, coords_t *c2)
 {
 	c1->xp = c1->x * d / c1->z;
 	c1->yp = c1->y * d / c1->z;
-	
+
 	c2->xp = c2->x * d / c2->z;
 	c2->yp = c2->y * d / c2->z;
 }
@@ -175,42 +175,43 @@ project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
 {
 	c1->xp = c1->x * d / c1->z;
 	c1->yp = c1->y * d / c1->z;
-	
+
 	c2->xp = c2->x * d / c2->z;
 	c2->yp = c2->y * d / c2->z;
-	
+
 	c3->xp = c3->x * d / c3->z;
 	c3->yp = c3->y * d / c3->z;
-	
+
 	c4->xp = c4->x * d / c4->z;
 	c4->yp = c4->y * d / c4->z;
 }
 
 int
 checkIntersection(box_t *b, float wx1, float wy1, float wx2, float wy2) {
-	
+
 	int type = 0;
-	
+	float x,y;
+
 	// Czy jakakolwiek linia sie przecina z jakakolwiek inna linia kwadrata - dla jednej plaszczyzny!
-	if(lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy1, wx1, wy2) == 0 &&
-	   lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy2, wx2, wy2) == 0 &&
-	   lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy2, wx2, wy1) == 0 &&
-	   lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy1, wx1, wy1) == 0 &&
-	   lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy1, wx1, wy2) == 0 &&
-	   lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy2, wx2, wy2) == 0 &&
-	   lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy2, wx2, wy1) == 0 &&
-	   lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy1, wx1, wy1) == 0 &&
-	   lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy1, wx1, wy2) == 0 &&
-	   lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy2, wx2, wy2) == 0 &&
-	   lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy2, wx2, wy1) == 0 &&
-	   lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy1, wx1, wy1) == 0 &&
-	   lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy1, wx1, wy2) == 0 &&
-	   lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy2, wx2, wy2) == 0 &&
-	   lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy2, wx2, wy1) == 0 &&
-	   lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy1, wx1, wy1) == 0 )
-	   type = 0;
-	else if () {
-	
+	if (lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy1, wx1, wy2, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy2, wx2, wy2, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy2, wx2, wy1, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp, b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy1, wx1, wy1, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy1, wx1, wy2, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy2, wx2, wy2, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy2, wx2, wy1, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp, b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy1, wx1, wy1, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy1, wx1, wy2, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy2, wx2, wy2, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy2, wx2, wy1, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp, b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy1, wx1, wy1, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy1, wx1, wy2, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy2, wx2, wy2, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy2, wx2, wy1, &x, &y) == 0 &&
+	    lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp, b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy1, wx1, wy1, &x, &y) == 0) {
+		type = 0;
+	} else if () {
+
 	}
 }
 
@@ -219,29 +220,29 @@ draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
 	box_t *b = NULL;
 	int i = 0;
-	
+
 	for (i = 0; i < 4; i++) {
 		b = &boxes[i];
-		
-		
+
+
 		if (checkIntersection() == 0) { // Plane outside window
-		
+
 		}
 		else if (checkIntersection() == 1) { // Plane surrounds window
-		
+
 		}
 		else if (lineSegmentIntersection() == 2) { // Plane partially meets window
-		
+
 		}
 		else if (lineSegmentIntersection() == 3) { // Plane inside window
-		
+
 		}
 	}
 	/*draw_plane(b->coord3d[0], b->coord3d[1], b->coord3d[2], b->coord3d[3]);
-	draw_plane(b->coord3d[4], b->coord3d[5], b->coord3d[6], b->coord3d[7]);
-	
-	draw_plane(b->coord3d[1], b->coord3d[2], b->coord3d[6], b->coord3d[5]);
-	draw_plane(b->coord3d[0], b->coord3d[3], b->coord3d[7], b->coord3d[4]);*/
+	  draw_plane(b->coord3d[4], b->coord3d[5], b->coord3d[6], b->coord3d[7]);
+
+	  draw_plane(b->coord3d[1], b->coord3d[2], b->coord3d[6], b->coord3d[5]);
+	  draw_plane(b->coord3d[0], b->coord3d[3], b->coord3d[7], b->coord3d[4]);*/
 }
 
 void
@@ -262,7 +263,7 @@ draw_scene(box_t *boxes)
 {
 	int i = 0;
 	box_t *b = NULL;
-	
+
 	// Project all scene
 	for (i = 0; i < 4; i++)
 	{
@@ -270,10 +271,9 @@ draw_scene(box_t *boxes)
 		project_plane(&b->coord3d[0], &b->coord3d[1], &b->coord3d[2], &b->coord3d[3]);
 		project_plane(&b->coord3d[4], &b->coord3d[5], &b->coord3d[6], &b->coord3d[7]);
 	}
-	
+
 	// Draw boxes with Warnock Depth Test
 	draw_boxes(boxes, -2, 2, -2, 2);
-	
 }
 
 void
@@ -289,7 +289,7 @@ box_translation(box_t *b, float x, float y, float z)
 	int i;
 
 	for (i = 0; i < 8; i++)
-			coord_translation(&b->coord3d[i], x,y,z);
+		coord_translation(&b->coord3d[i], x,y,z);
 }
 
 void
@@ -305,7 +305,7 @@ box_rotate_x(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < 8; i++)
-			coord_rotate_x(&b->coord3d[i], alphax * M_PI / 180);
+		coord_rotate_x(&b->coord3d[i], alphax * M_PI / 180);
 }
 
 void
@@ -321,7 +321,7 @@ box_rotate_y(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < 8; i++)
-			coord_rotate_y(&b->coord3d[i], alphax * M_PI / 180);
+		coord_rotate_y(&b->coord3d[i], alphax * M_PI / 180);
 }
 
 void
@@ -337,7 +337,7 @@ box_rotate_z(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < 8; i++)
-			coord_rotate_z(&b->coord3d[i], alphax * M_PI / 180);
+		coord_rotate_z(&b->coord3d[i], alphax * M_PI / 180);
 }
 
 
@@ -394,67 +394,67 @@ main()
 
 	while (true)
 	{
-			SDL_Event ev;
+		SDL_Event ev;
 
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glLoadIdentity();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glLoadIdentity();
 
-			draw_scene(b);
+		draw_scene(b);
 
-			memset(&ev, 0, sizeof(ev));
-			while(SDL_PollEvent(&ev))
+		memset(&ev, 0, sizeof(ev));
+		while(SDL_PollEvent(&ev))
+		{
+			switch(ev.type)
 			{
-					switch(ev.type)
-					{
-							case SDL_KEYDOWN:
-									pkeys[ev.key.keysym.sym] = true;
-									break;
-							case SDL_KEYUP:
-									pkeys[ev.key.keysym.sym] = false;
-									break;
-							case SDL_QUIT:
-									SDL_Quit();
-									exit(1);
-					}
+				case SDL_KEYDOWN:
+					pkeys[ev.key.keysym.sym] = true;
+					break;
+				case SDL_KEYUP:
+					pkeys[ev.key.keysym.sym] = false;
+					break;
+				case SDL_QUIT:
+					SDL_Quit();
+					exit(1);
 			}
+		}
 
-			/* EVENTS */
-			PRESSEDKEY(SDLK_UP)
-							box_translation(b + i, 0, 0, -0.01);
-			PRESSEDKEY(SDLK_DOWN)
-							box_translation(b + i, 0, 0, 0.01);
-			PRESSEDKEY(SDLK_LEFT)
-							box_translation(b + i, 0.01, 0, 0);
-			PRESSEDKEY(SDLK_RIGHT)
-							box_translation(b + i, -0.01, 0, 0);
-			PRESSEDKEY(SDLK_PAGEUP)
-							box_translation(b + i, 0, 0.01, 0);
-			PRESSEDKEY(SDLK_PAGEDOWN)
-							box_translation(b + i, 0, -0.01, 0);
-			PRESSEDKEY(SDLK_w)
-							box_rotate_x(b + i, 0.05);
-			PRESSEDKEY(SDLK_s)
-							box_rotate_x(b + i, -0.05);
-			PRESSEDKEY(SDLK_a)
-							box_rotate_y(b + i, 0.05);
-			PRESSEDKEY(SDLK_d)
-							box_rotate_y(b + i, -0.05);
-			PRESSEDKEY(SDLK_e)
-							box_rotate_z(b + i, 0.05);
-			PRESSEDKEY(SDLK_q)
-							box_rotate_z(b + i, -0.05);
-			PRESSEDKEY(SDLK_r)
-							d += 0.001;
-			PRESSEDKEY(SDLK_f)
-							d -= 0.001;
-							if (d < 0)
-									d = 0.001;
-			PRESSEDKEY(SDLK_1)
-							trick = false;
-			PRESSEDKEY(SDLK_2)
-							trick = true;
+		/* EVENTS */
+		PRESSEDKEY(SDLK_UP)
+			box_translation(b + i, 0, 0, -0.01);
+		PRESSEDKEY(SDLK_DOWN)
+			box_translation(b + i, 0, 0, 0.01);
+		PRESSEDKEY(SDLK_LEFT)
+			box_translation(b + i, 0.01, 0, 0);
+		PRESSEDKEY(SDLK_RIGHT)
+			box_translation(b + i, -0.01, 0, 0);
+		PRESSEDKEY(SDLK_PAGEUP)
+			box_translation(b + i, 0, 0.01, 0);
+		PRESSEDKEY(SDLK_PAGEDOWN)
+			box_translation(b + i, 0, -0.01, 0);
+		PRESSEDKEY(SDLK_w)
+			box_rotate_x(b + i, 0.05);
+		PRESSEDKEY(SDLK_s)
+			box_rotate_x(b + i, -0.05);
+		PRESSEDKEY(SDLK_a)
+			box_rotate_y(b + i, 0.05);
+		PRESSEDKEY(SDLK_d)
+			box_rotate_y(b + i, -0.05);
+		PRESSEDKEY(SDLK_e)
+			box_rotate_z(b + i, 0.05);
+		PRESSEDKEY(SDLK_q)
+			box_rotate_z(b + i, -0.05);
+		PRESSEDKEY(SDLK_r)
+			d += 0.001;
+		PRESSEDKEY(SDLK_f)
+			d -= 0.001;
+		if (d < 0)
+			d = 0.001;
+		PRESSEDKEY(SDLK_1)
+			trick = false;
+		PRESSEDKEY(SDLK_2)
+			trick = true;
 
-			SDL_GL_SwapBuffers();
+		SDL_GL_SwapBuffers();
 	}
 
 	return (0);
