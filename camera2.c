@@ -300,13 +300,13 @@ draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 			/* Plane outside window */
 			break;
 		case 1:
-			/* Plane surrounds window */
+			/* Plane inside window */
 			break;
 		case 2:
 			/* Plane partially meets window */
 			break;
 		case 3:
-			/* Plane inside window */
+			/* Plane surrounds window */
 			break;
 		}
 	}
