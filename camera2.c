@@ -27,6 +27,20 @@ typedef struct {
 bool pkeys[512];
 bool trick = false;
 
+void
+set_color(int num)
+{
+
+	switch(num)
+	{
+		case 0: glColor3f(1.0, 0.0, 0.0); break;
+		case 1: glColor3f(1.0, 1.0, 0.0); break;
+		case 2: glColor3f(0.0, 0.0, 1.0); break;
+		case 3: glColor3f(0.0, 1.0, 0.0); break;
+		case 4: glColor3f(0.0, 0.0, 0.0); break;
+	}
+}
+
 // http://alienryderflex.com/intersect/
 int
 lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
@@ -162,12 +176,14 @@ draw_line(coords_t c1, coords_t c2)
 void
 draw_plane(coords_t c1, coords_t c2, coords_t c3, coords_t c4)
 {
+
 	draw_plane_points(c1.xp, c1.yp, c2.xp, c2.yp, c3.xp, c3.yp, c4.xp, c4.yp);
 }
 
 void
 project_line(coords_t *c1, coords_t *c2)
 {
+
 	c1->xp = c1->x * d / c1->z;
 	c1->yp = c1->y * d / c1->z;
 
@@ -178,6 +194,7 @@ project_line(coords_t *c1, coords_t *c2)
 void
 project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
 {
+
 	c1->xp = c1->x * d / c1->z;
 	c1->yp = c1->y * d / c1->z;
 
@@ -198,7 +215,8 @@ project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
  * 3 - polygon surrounds qube
  */
 int
-classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
+test_plane(const coords_t *c1, const coords_t *c2, const coords_t *c3,
+    const coords_t *c4, float wx1, float wy1, float wx2, float wy2)
 {
 	float x,y;
 	float bx, by, sx, sy;
@@ -209,66 +227,48 @@ classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 	 * 0 - some of line are interaction with qube line
 	 * 1 - none of line are interaction with qube line
 	 */
-	r = lineSegmentIntersection(b->coord[0].xp, b->coord[0].yp,
-	    b->coord[1].xp, b->coord[1].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[0].xp, b->coord[0].yp,
-	    b->coord[1].xp, b->coord[1].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[0].xp, b->coord[0].yp,
-	    b->coord[1].xp, b->coord[1].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[0].xp, b->coord[0].yp,
-	    b->coord[1].xp, b->coord[1].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[1].xp, b->coord[1].yp,
-	    b->coord[2].xp, b->coord[2].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[1].xp, b->coord[1].yp,
-	    b->coord[2].xp, b->coord[2].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[1].xp, b->coord[1].yp,
-	    b->coord[2].xp, b->coord[2].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[1].xp, b->coord[1].yp,
-	    b->coord[2].xp, b->coord[2].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[2].xp, b->coord[2].yp,
-	    b->coord[3].xp, b->coord[3].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[2].xp, b->coord[2].yp,
-	    b->coord[3].xp, b->coord[3].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[2].xp, b->coord[2].yp,
-	    b->coord[3].xp, b->coord[3].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[2].xp, b->coord[2].yp,
-	    b->coord[3].xp, b->coord[3].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[3].xp, b->coord[3].yp,
-	    b->coord[0].xp, b->coord[0].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[3].xp, b->coord[3].yp,
-	    b->coord[0].xp, b->coord[0].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[3].xp, b->coord[3].yp,
-	    b->coord[0].xp, b->coord[0].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord[3].xp, b->coord[3].yp,
-	    b->coord[0].xp, b->coord[0].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r = lineSegmentIntersection(c1->xp, c1->yp, c2->xp, c2->yp, wx1, wy1, wx1,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c1->xp, c1->yp, c2->xp, c2->yp, wx1, wy2, wx2,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c1->xp, c1->yp, c2->xp, c2->yp, wx2, wy2, wx2,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c1->xp, c1->yp, c2->xp, c2->yp, wx2, wy1, wx1,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c2->xp, c2->yp, c3->xp, c3->yp, wx1, wy1, wx1,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c2->xp, c2->yp, c3->xp, c3->yp, wx1, wy2, wx2,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c2->xp, c2->yp, c3->xp, c3->yp, wx2, wy2, wx2,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c2->xp, c2->yp, c3->xp, c3->yp, wx2, wy1, wx1,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c3->xp, c3->yp, c4->xp, c4->yp, wx1, wy1, wx1,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c3->xp, c3->yp, c4->xp, c4->yp, wx1, wy2, wx2,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c3->xp, c3->yp, c4->xp, c4->yp, wx2, wy2, wx2,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c3->xp, c3->yp, c4->xp, c4->yp, wx2, wy1, wx1,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c4->xp, c4->yp, c1->xp, c1->yp, wx1, wy1, wx1,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c4->xp, c4->yp, c1->xp, c1->yp, wx1, wy2, wx2,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c4->xp, c4->yp, c1->xp, c1->yp, wx2, wy2, wx2,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c4->xp, c4->yp, c1->xp, c1->yp, wx2, wy1, wx1,
+	    wy1, &x, &y) == 0;
 
 	/* part of polygon is in qube */
 	if (r == 0)
 		return 1;
 
-	/* determ which coordinates are biger in qube */
-	if (wx1 > wx2) {
-		bx = wx1;
-		sx = wx2;
-	} else {
-		bx = wx2;
-		sx = wx1;
-	}
-
-	if (wy1 > wy2) {
-		by = wy1;
-		by = wy2;
-	} else {
-		sy = wy2;
-		sy = wy1;
-	}
-
 	/*
 	 * we know that no line is cut qube, so if one of polygon point is in the qube
 	 * all other points are in qube, and that means that polygon is in qube
 	 */
-	if (b->coord[0].xp < bx && b->coord[0].xp > sx &&
-	    b->coord[0].yp > by && b->coord[0].yp > sy)
+	if (c1->xp < wx2 && c1->xp > wx1 && c1->yp < wy2 && c1->yp > wy1)
 		return 2;
 
 	/*
@@ -276,9 +276,8 @@ classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 	 * two diffrent sites of one point of qube that mean that
 	 * polygon is around qube
 	 */
-	 if ((b->coord[0].xp > bx && b->coord[0].xp < bx) ||
-	     (b->coord[0].xp < bx && b->coord[0].xp >bx))
-		return 2;
+	 if ((c1->xp > wx1 && c2->xp < wx1) || (c1->xp < wx1 && c2->xp > wx1))
+		return 3;
 
 	/* ok, we don't have other choose this must be polygon from one side */
 	return 0;
@@ -287,48 +286,63 @@ classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 void
 draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
-	box_t *b = NULL;
-	int i = 0;
-	int type;
+	box_t *b;
+	int i, j;
+	int type[4];
+	int pow, piw, ppmw, psw;
+	float hx, hy;
 
+	piw = ppmw = psw = pow = 0;
 	for (i = 0; i < 4; i++) {
 		b = &boxes[i];
-		type = classification_qube(boxes, wx1, wy1, wx2, wy2);
+		type[0] = test_plane(&b->coord[0], &b->coord[1], &b->coord[2],
+		    &b->coord[3], wx1, wy1, wx2, wy2);
+		type[1] = test_plane(&b->coord[4], &b->coord[5], &b->coord[6],
+		    &b->coord[7], wx1, wy1, wx2, wy2);
+		type[2] = test_plane(&b->coord[1], &b->coord[2], &b->coord[6],
+		    &b->coord[5], wx1, wy1, wx2, wy2);
+		type[3] = test_plane(&b->coord[0], &b->coord[3], &b->coord[7],
+		    &b->coord[4], wx1, wy1, wx2, wy2);
 
-		switch (type) {
-		case 0:
-			/* Plane outside window */
-			break;
-		case 1:
-			/* Plane inside window */
-			break;
-		case 2:
-			/* Plane partially meets window */
-			break;
-		case 3:
-			/* Plane surrounds window */
-			break;
+		for (j = 0; j < 4; j++) {
+			switch (type[j]) {
+			case 0:
+				/* Plane outside window */
+				pow ++;
+				break;
+			case 1:
+				/* Plane inside window */
+				piw ++;
+				break;
+			case 2:
+				/* Plane partially meets window */
+				ppmw ++;
+				break;
+			case 3:
+				/* Plane surrounds window */
+				psw ++;
+				break;
+			}
 		}
 	}
+
+	hx = (wx2 - wx1) / 2;
+	hy = (wy2 - wy1) / 2;
+	printf("%i %i %i\n", piw, ppmw, psw);
+	if (hx > 0.01 && hy > 0.01 && (piw > 1 || ppmw > 1 || psw > 1)) {
+		/* continue Warnock */
+		draw_boxes(boxes, wx1, wx1 + hx, wy1, wy1 + hy);
+		draw_boxes(boxes, wx1, wx1 + hx, wy1 + hy, wy2);
+		draw_boxes(boxes, wx1 + hx, wx2, wy1, wy1 + hy);
+		draw_boxes(boxes, wx1 + hx, wx2, wy1 + hy, wy2);
+		return;
+	}
+
 	/*draw_plane(b->coord[0], b->coord[1], b->coord[2], b->coord[3]);
 	  draw_plane(b->coord[4], b->coord[5], b->coord[6], b->coord[7]);
 
 	  draw_plane(b->coord[1], b->coord[2], b->coord[6], b->coord[5]);
 	  draw_plane(b->coord[0], b->coord[3], b->coord[7], b->coord[4]);*/
-}
-
-void
-set_color(int num)
-{
-
-	switch(num)
-	{
-		case 0: glColor3f(1.0, 0.0, 0.0); break;
-		case 1: glColor3f(1.0, 1.0, 0.0); break;
-		case 2: glColor3f(0.0, 0.0, 1.0); break;
-		case 3: glColor3f(0.0, 1.0, 0.0); break;
-		case 4: glColor3f(0.0, 0.0, 0.0); break;
-	}
 }
 
 void
