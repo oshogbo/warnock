@@ -201,7 +201,7 @@ int
 classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 {
 	float x,y;
-	float xb, yb, xs, ys;
+	float bx, by, sx, sy;
 	bool r;
 	int i;
 
@@ -267,8 +267,8 @@ classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 	 * we know that no line is cut qube, so if one of polygon point is in the qube
 	 * all other points are in qube, and that means that polygon is in qube
 	 */
-	if (b->coord[0].xp < bx && b->coord[0] > sx &&
-	    b->coord[0].yp > by && b->coord[0] > sy)
+	if (b->coord[0].xp < bx && b->coord[0].xp > sx &&
+	    b->coord[0].yp > by && b->coord[0].yp > sy)
 		return 2;
 
 	/*
