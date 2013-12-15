@@ -21,7 +21,7 @@ typedef struct coords {
 } coords_t;
 
 typedef struct {
-	coords_t coord3d[8];
+	coords_t coord[8];
 } box_t;
 
 bool pkeys[512];
@@ -29,7 +29,8 @@ bool trick = false;
 
 // http://alienryderflex.com/intersect/
 int
-lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx, float Cy, float Dx, float Dy, float *X, float *Y)
+lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
+    float Cy, float Dx, float Dy, float *X, float *Y)
 {
 
 	float distAB, theCos, theSin, newX, ABpos ;
@@ -199,6 +200,7 @@ int
 classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 {
 	float x,y;
+	float xb, yb, xs, ys;
 	bool r;
 	int i;
 
@@ -206,43 +208,78 @@ classification_qube(box_t *b, float wx1, float wy1, float wx2, float wy2)
 	 * 0 - some of line are interaction with qube line
 	 * 1 - none of line are interaction with qube line
 	 */
-	r = lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
-	    b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
-	    b->coord3d[1].xp, b->coord3d[1].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
-	    b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[0].xp, b->coord3d[0].yp,
-	    b->coord3d[1].xp, b->coord3d[1].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
-	    b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
-	    b->coord3d[2].xp, b->coord3d[2].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
-	    b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[1].xp, b->coord3d[1].yp,
-	    b->coord3d[2].xp, b->coord3d[2].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
-	    b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
-	    b->coord3d[3].xp, b->coord3d[3].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
-	    b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[2].xp, b->coord3d[2].yp,
-	    b->coord3d[3].xp, b->coord3d[3].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
-	    b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
-	    b->coord3d[0].xp, b->coord3d[0].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
-	    b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(b->coord3d[3].xp, b->coord3d[3].yp,
-	    b->coord3d[0].xp, b->coord3d[0].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r = lineSegmentIntersection(b->coord[0].xp, b->coord[0].yp,
+	    b->coord[1].xp, b->coord[1].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[0].xp, b->coord[0].yp,
+	    b->coord[1].xp, b->coord[1].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[0].xp, b->coord[0].yp,
+	    b->coord[1].xp, b->coord[1].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[0].xp, b->coord[0].yp,
+	    b->coord[1].xp, b->coord[1].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[1].xp, b->coord[1].yp,
+	    b->coord[2].xp, b->coord[2].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[1].xp, b->coord[1].yp,
+	    b->coord[2].xp, b->coord[2].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[1].xp, b->coord[1].yp,
+	    b->coord[2].xp, b->coord[2].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[1].xp, b->coord[1].yp,
+	    b->coord[2].xp, b->coord[2].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[2].xp, b->coord[2].yp,
+	    b->coord[3].xp, b->coord[3].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[2].xp, b->coord[2].yp,
+	    b->coord[3].xp, b->coord[3].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[2].xp, b->coord[2].yp,
+	    b->coord[3].xp, b->coord[3].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[2].xp, b->coord[2].yp,
+	    b->coord[3].xp, b->coord[3].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[3].xp, b->coord[3].yp,
+	    b->coord[0].xp, b->coord[0].yp, wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[3].xp, b->coord[3].yp,
+	    b->coord[0].xp, b->coord[0].yp, wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[3].xp, b->coord[3].yp,
+	    b->coord[0].xp, b->coord[0].yp, wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(b->coord[3].xp, b->coord[3].yp,
+	    b->coord[0].xp, b->coord[0].yp, wx2, wy1, wx1, wy1, &x, &y) == 0;
 
 	/* part of polygon is in qube */
 	if (r == 0)
 		return 1;
 
+	/* determ which coordinates are biger in qube */
+	if (wx1 > wx2) {
+		bx = wx1;
+		sx = wx2;
+	} else {
+		bx = wx2;
+		sx = wx1;
+	}
+
+	if (wy1 > wy2) {
+		by = wy1;
+		by = wy2;
+	} else {
+		sy = wy2;
+		sy = wy1;
+	}
+
+	/*
+	 * we know that no line is cut qube, so if one of polygon point is in the qube
+	 * all other points are in qube, and that means that polygon is in qube
+	 */
+	if (b->coord[0].xp < bx && b->coord[0] > sx &&
+	    b->coord[0].yp > by && b->coord[0] > sy)
+		return 1;
+
+	/*
+	 * we know that no line is cut qube, so if two points of polygon are one
+	 * two diffrent sites of one point of qube that mean that
+	 * polygon is around qube
+	 */
+	 if ((b->coord[0].xp > bx && b->coord[0].xp < bx) ||
+	     (b->coord[0].xp < bx && b->coord[0].xp >bx))
+		return 2;
+
+	/* ok, we don't have other choose this must be polygon from one side */
 	return 0;
 }
 
@@ -272,11 +309,11 @@ draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 			break;
 		}
 	}
-	/*draw_plane(b->coord3d[0], b->coord3d[1], b->coord3d[2], b->coord3d[3]);
-	  draw_plane(b->coord3d[4], b->coord3d[5], b->coord3d[6], b->coord3d[7]);
+	/*draw_plane(b->coord[0], b->coord[1], b->coord[2], b->coord[3]);
+	  draw_plane(b->coord[4], b->coord[5], b->coord[6], b->coord[7]);
 
-	  draw_plane(b->coord3d[1], b->coord3d[2], b->coord3d[6], b->coord3d[5]);
-	  draw_plane(b->coord3d[0], b->coord3d[3], b->coord3d[7], b->coord3d[4]);*/
+	  draw_plane(b->coord[1], b->coord[2], b->coord[6], b->coord[5]);
+	  draw_plane(b->coord[0], b->coord[3], b->coord[7], b->coord[4]);*/
 }
 
 void
@@ -303,8 +340,8 @@ draw_scene(box_t *boxes)
 	for (i = 0; i < 4; i++)
 	{
 		b = &boxes[i];
-		project_plane(&b->coord3d[0], &b->coord3d[1], &b->coord3d[2], &b->coord3d[3]);
-		project_plane(&b->coord3d[4], &b->coord3d[5], &b->coord3d[6], &b->coord3d[7]);
+		project_plane(&b->coord[0], &b->coord[1], &b->coord[2], &b->coord[3]);
+		project_plane(&b->coord[4], &b->coord[5], &b->coord[6], &b->coord[7]);
 	}
 
 	/* Draw boxes with Warnock Depth Test */
@@ -324,7 +361,7 @@ box_translation(box_t *b, float x, float y, float z)
 	int i;
 
 	for (i = 0; i < 8; i++)
-		coord_translation(&b->coord3d[i], x,y,z);
+		coord_translation(&b->coord[i], x,y,z);
 }
 
 void
@@ -340,7 +377,7 @@ box_rotate_x(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < 8; i++)
-		coord_rotate_x(&b->coord3d[i], alphax * M_PI / 180);
+		coord_rotate_x(&b->coord[i], alphax * M_PI / 180);
 }
 
 void
@@ -356,7 +393,7 @@ box_rotate_y(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < 8; i++)
-		coord_rotate_y(&b->coord3d[i], alphax * M_PI / 180);
+		coord_rotate_y(&b->coord[i], alphax * M_PI / 180);
 }
 
 void
@@ -372,7 +409,7 @@ box_rotate_z(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < 8; i++)
-		coord_rotate_z(&b->coord3d[i], alphax * M_PI / 180);
+		coord_rotate_z(&b->coord[i], alphax * M_PI / 180);
 }
 
 
@@ -384,37 +421,37 @@ main()
 	box_t b[4];
 
 	alphax = alphay = alphaz = 0;
-	b[0].coord3d[0].x = 1.0;
-	b[0].coord3d[0].y = 1.0;
-	b[0].coord3d[0].z = 1.0;
+	b[0].coord[0].x = 1.0;
+	b[0].coord[0].y = 1.0;
+	b[0].coord[0].z = 1.0;
 
-	b[0].coord3d[1].x = 1.0;
-	b[0].coord3d[1].y = 2.0;
-	b[0].coord3d[1].z = 1.0;
+	b[0].coord[1].x = 1.0;
+	b[0].coord[1].y = 2.0;
+	b[0].coord[1].z = 1.0;
 
-	b[0].coord3d[2].x = 2.0;
-	b[0].coord3d[2].y = 2.0;
-	b[0].coord3d[2].z = 1.0;
+	b[0].coord[2].x = 2.0;
+	b[0].coord[2].y = 2.0;
+	b[0].coord[2].z = 1.0;
 
-	b[0].coord3d[3].x = 2.0;
-	b[0].coord3d[3].y = 1.0;
-	b[0].coord3d[3].z = 1.0;
+	b[0].coord[3].x = 2.0;
+	b[0].coord[3].y = 1.0;
+	b[0].coord[3].z = 1.0;
 
-	b[0].coord3d[4].x = 1.0;
-	b[0].coord3d[4].y = 1.0;
-	b[0].coord3d[4].z = 2.0;
+	b[0].coord[4].x = 1.0;
+	b[0].coord[4].y = 1.0;
+	b[0].coord[4].z = 2.0;
 
-	b[0].coord3d[5].x = 1.0;
-	b[0].coord3d[5].y = 2.0;
-	b[0].coord3d[5].z = 2.0;
+	b[0].coord[5].x = 1.0;
+	b[0].coord[5].y = 2.0;
+	b[0].coord[5].z = 2.0;
 
-	b[0].coord3d[6].x = 2.0;
-	b[0].coord3d[6].y = 2.0;
-	b[0].coord3d[6].z = 2.0;
+	b[0].coord[6].x = 2.0;
+	b[0].coord[6].y = 2.0;
+	b[0].coord[6].z = 2.0;
 
-	b[0].coord3d[7].x = 2.0;
-	b[0].coord3d[7].y = 1.0;
-	b[0].coord3d[7].z = 2.0;
+	b[0].coord[7].x = 2.0;
+	b[0].coord[7].y = 1.0;
+	b[0].coord[7].z = 2.0;
 
 	memcpy(&b[1], &b[0], sizeof(b[0]));
 	memcpy(&b[2], &b[0], sizeof(b[0]));
