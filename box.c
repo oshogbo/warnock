@@ -6,7 +6,7 @@
 static void
 init_box_fb(plane_t *p, float f)
 {
-	
+
 	coord_set(&p->coords[0], 1.0, 1.0, f);
 	coord_set(&p->coords[1], 1.0, 2.0, f);
 	coord_set(&p->coords[2], 2.0, 2.0, f);
@@ -27,12 +27,12 @@ init_box_tb(plane_t *p, float f)
 }
 
 /*
- * left right 
+ * left right
  */
 static void
 init_box_lr(plane_t *p, float f)
 {
-	
+
 	coord_set(&p->coords[0], f, 1.0, 1.0);
 	coord_set(&p->coords[1], f, 1.0, 2.0);
 	coord_set(&p->coords[2], f, 2.0, 2.0);
