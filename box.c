@@ -88,14 +88,10 @@ box_project(box_t *b, float d)
 }
 
 void
-draw_boxes(box_t *boxes,
-    __attribute__((unused)) float wx1,
-    __attribute__((unused)) float wy1,
-    __attribute__((unused)) float wx2,
-    __attribute__((unused)) float wy2)
+box_draw(box_t *box)
 {
 	int i;
 
 	for (i = 0; i < 6; i++)
-		plane_draw(&boxes->planes[i]);
+		plane_draw(&box->planes[i]);
 }

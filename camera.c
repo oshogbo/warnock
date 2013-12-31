@@ -112,6 +112,19 @@ init_window(int width, int height, const char *name, bool fs)
 }
 
 void
+draw_boxes(box_t *boxes,
+    __attribute__((unused)) float wx1,
+    __attribute__((unused)) float wy1,
+    __attribute__((unused)) float wx2,
+    __attribute__((unused)) float wy2)
+{
+	int i;
+
+	for (i = 0; i < 4; i++)
+		box_draw(boxes + i);
+}
+
+void
 draw_scene(box_t *boxes)
 {
 	int i;

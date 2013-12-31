@@ -4,6 +4,8 @@ static void
 plane_draw_points(float x1, float y1, float x2, float y2,
     float x3, float y3, float x4, float y4)
 {
+
+	/* XXX CHANGE THIS */
 	glBegin(GL_LINE_STRIP);
 	glVertex2f(x1, y1);
 	glVertex2f(x2, y2);
