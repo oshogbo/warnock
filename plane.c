@@ -6,7 +6,7 @@ plane_draw_points(float x1, float y1, float x2, float y2,
 {
 
 	/* XXX CHANGE THIS */
-	glBegin(GL_LINE_STRIP);
+	glBegin(GL_QUAD_STRIP);
 	glVertex2f(x1, y1);
 	glVertex2f(x2, y2);
 	glVertex2f(x3, y3);

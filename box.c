@@ -1,45 +1,58 @@
 #include "box.h"
 
+/*
+ * forward back
+ */
+static void
+init_box_fb(plane_t *p, float f)
+{
+	
+	coord_set(&p->coords[0], 1.0, 1.0, f);
+	coord_set(&p->coords[1], 1.0, 2.0, f);
+	coord_set(&p->coords[2], 2.0, 2.0, f);
+	coord_set(&p->coords[3], 2.0, 1.0, f);
+}
+
+/*
+ * top bottom
+ */
+static void
+init_box_tb(plane_t *p, float f)
+{
+
+	coord_set(&p->coords[0], 1.0, f, 1.0);
+	coord_set(&p->coords[1], 1.0, f, 2.0);
+	coord_set(&p->coords[2], 2.0, f, 2.0);
+	coord_set(&p->coords[3], 2.0, f, 1.0);
+}
+
+/*
+ * left right 
+ */
+static void
+init_box_lr(plane_t *p, float f)
+{
+
+	coord_set(&p->coords[0], f, 1.0, 1.0);
+	coord_set(&p->coords[1], f, 1.0, 2.0);
+	coord_set(&p->coords[2], f, 2.0, 2.0);
+	coord_set(&p->coords[3], f, 2.0, 1.0);
+}
+
 void
 init_box(box_t *b)
 {
-	plane_t *p;
+	int i;
 
-	p = &b->planes[0];
-	coord_set(&p->coords[0], 1.0, 1.0, 1.0);
-	coord_set(&p->coords[1], 1.0, 2.0, 1.0);
-	coord_set(&p->coords[2], 2.0, 2.0, 1.0);
-	coord_set(&p->coords[3], 2.0, 1.0, 1.0);
+	i = 0;
+	init_box_fb(&b->planes[i++], 1.0);
+	init_box_fb(&b->planes[i++], 2.0);
 
-	p = &b->planes[1];
-	coord_set(&p->coords[0], 1.0, 2.0, 1.0);
-	coord_set(&p->coords[1], 1.0, 2.0, 2.0);
-	coord_set(&p->coords[2], 2.0, 2.0, 2.0);
-	coord_set(&p->coords[3], 2.0, 2.0, 1.0);
+	init_box_tb(&b->planes[i++], 1.0);
+	init_box_tb(&b->planes[i++], 2.0);
 
-	p = &b->planes[2];
-	coord_set(&p->coords[0], 1.0, 2.0, 2.0);
-	coord_set(&p->coords[1], 2.0, 2.0, 2.0);
-	coord_set(&p->coords[2], 2.0, 1.0, 2.0);
-	coord_set(&p->coords[3], 1.0, 1.0, 2.0);
-
-	p = &b->planes[3];
-	coord_set(&p->coords[0], 1.0, 1.0, 2.0);
-	coord_set(&p->coords[1], 2.0, 1.0, 2.0);
-	coord_set(&p->coords[2], 2.0, 1.0, 1.0);
-	coord_set(&p->coords[3], 1.0, 1.0, 1.0);
-
-	p = &b->planes[4];
-	coord_set(&p->coords[0], 2.0, 2.0, 1.0);
-	coord_set(&p->coords[1], 2.0, 2.0, 2.0);
-	coord_set(&p->coords[2], 2.0, 1.0, 2.0);
-	coord_set(&p->coords[3], 2.0, 1.0, 1.0);
-
-	p = &b->planes[5];
-	coord_set(&p->coords[0], 1.0, 1.0, 1.0);
-	coord_set(&p->coords[1], 1.0, 2.0, 1.0);
-	coord_set(&p->coords[2], 1.0, 2.0, 2.0);
-	coord_set(&p->coords[3], 1.0, 1.0, 2.0);
+	init_box_lr(&b->planes[i++], 1.0);
+	init_box_lr(&b->planes[i++], 2.0);
 }
 
 void
