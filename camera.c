@@ -15,7 +15,6 @@
 float d = 2.0;
 
 bool pkeys[512];
-bool trick = false;
 
 void
 set_color(int num)
@@ -212,10 +211,6 @@ main()
 			d -= 0.001;
 		if (d < 0)
 			d = 0.001;
-		PRESSEDKEY(SDLK_1)
-			trick = false;
-		PRESSEDKEY(SDLK_2)
-			trick = true;
 
 		SDL_GL_SwapBuffers();
 	}
