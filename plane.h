@@ -1,6 +1,8 @@
 #ifndef __PLANE_H__
 #define __PLANE_H__
 
+#define COORDS_PER_PLANE 4
+
 #include <GL/gl.h>
 
 #include "coord.h"

@@ -1,7 +1,17 @@
 #include "coord.h"
 
 void
-coord_translation(coord_t *c, float x, float y, float z) {
+coord_project(coord_t *c, float d)
+{
+
+	c->xp = c->x * d / c->z;
+	c->yp = c->y * d / c->z;
+}
+
+void
+coord_translation(coord_t *c, float x, float y, float z)
+{
+
 	c->x += x;
 	c->y += y;
 	c->z += z;
