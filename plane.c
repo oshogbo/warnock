@@ -63,8 +63,8 @@ void
 plane_draw(plane_t *p)
 {
 
-	plane_draw_points(p->coords[0].x, p->coords[0].y,
-	    p->coords[1].x, p->coords[1].y,
-	    p->coords[2].x, p->coords[2].y,
-	    p->coords[3].x, p->coords[3].y);
+	plane_draw_points(p->coords[0].xp, p->coords[0].yp,
+	    p->coords[1].xp, p->coords[1].yp,
+	    p->coords[2].xp, p->coords[2].yp,
+	    p->coords[3].xp, p->coords[3].yp);
 }

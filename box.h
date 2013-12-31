@@ -20,5 +20,5 @@ void box_translation(box_t *b, float x, float y, float z);
 
 void box_project(box_t *b, float d);
 
-void draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2);
+void box_draw(box_t *box);
 #endif
