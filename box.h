@@ -4,8 +4,10 @@
 #include "coord.h"
 #include "plane.h"
 
+#define PLANE_PER_BOX 6
+
 typedef struct {
-	plane_t planes[6];
+	plane_t planes[PLANE_PER_BOX];
 } box_t;
 
 void init_box(box_t *b);

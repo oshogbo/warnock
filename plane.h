@@ -8,7 +8,7 @@
 #include "coord.h"
 
 typedef struct {
-	coord_t coords[4];
+	coord_t coords[COORDS_PER_PLANE];
 } plane_t;
 
 void plane_translation(plane_t *p, float x, float y, float z);
