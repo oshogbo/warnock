@@ -5,24 +5,14 @@
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 
+#include "box.h"
+
 #define BACKGROUND 4
 
 # define PRESSEDKEY(k) if(pkeys[k]) \
 	for(i = 0; i < 4; i++)
 
 float d = 2.0;
-
-typedef struct coords {
-	float x;
-	float y;
-	float z;
-	float xp;
-	float yp;
-} coords_t;
-
-typedef struct {
-	coords_t coord[8];
-} box_t;
 
 bool pkeys[512];
 bool trick = false;
@@ -42,7 +32,7 @@ set_color(int num)
 }
 
 // http://alienryderflex.com/intersect/
-int
+/*int
 lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
     float Cy, float Dx, float Dy, float *X, float *Y)
 {
@@ -92,8 +82,7 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
 
 	//  Success.
 	return 1;
-}
-
+}*/
 
 void
 init_window(int width, int height, const char *name, bool fs)
@@ -114,7 +103,6 @@ init_window(int width, int height, const char *name, bool fs)
 	glClearDepth(1.0);
 
 	glLoadIdentity();
-	//glOrtho(0.0, width / 10.0, height / 10.0, 0.0, 1, -1);
 	glOrtho(-2, 2, -2, 2, 1.0, -1.0);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_BLEND);
@@ -124,351 +112,25 @@ init_window(int width, int height, const char *name, bool fs)
 }
 
 void
-draw_line_points(float x1, float y1, float x2, float y2)
-{
-	glBegin(GL_LINE_STRIP);
-	glVertex2f(x1, y1);
-	glVertex2f(x2, y2);
-	glEnd();
-}
-
-void
-draw_plane_points(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
-{
-	glBegin(GL_QUADS);
-	glVertex2f(x1, y1);
-	glVertex2f(x2, y2);
-	glVertex2f(x3, y3);
-	glVertex2f(x4, y4);
-	glEnd();
-}
-
-void
-draw_line(coords_t c1, coords_t c2)
-{
-	float x1, y1, d1;
-	float x2, y2, d2;
-	float z1, z2;
-	float cx1, cy1;
-	float cx2, cy2;
-
-	z1 = c1.z;
-	z2 = c2.z;
-	/*cx1 = c1.x;
-	  cx2 = c2.x;
-	  cy1 = c1.y;
-	  cy2 = c2.y;*/
-
-	if (z1 <= 0.01 || z2 <= 0.01)
-		return;
-
-	/*x1 = cx1 * d / z1;
-	  y1 = cy1 * d / z1;
-
-	  x2 = cx2 * d / z2;
-	  y2 = cy2 * d / z2;
-
-	  draw_line_points(x1, y1, x2, y2);*/
-	//project_line(&c1, &c2);
-	draw_line_points(c1.xp, c1.yp, c2.xp, c2.yp);
-}
-
-void
-draw_plane(coords_t c1, coords_t c2, coords_t c3, coords_t c4)
-{
-
-	draw_plane_points(c1.xp, c1.yp, c2.xp, c2.yp, c3.xp, c3.yp, c4.xp, c4.yp);
-}
-
-void
-project_line(coords_t *c1, coords_t *c2)
-{
-
-	c1->xp = c1->x * d / c1->z;
-	c1->yp = c1->y * d / c1->z;
-
-	c2->xp = c2->x * d / c2->z;
-	c2->yp = c2->y * d / c2->z;
-}
-
-void
-project_plane(coords_t *c1, coords_t *c2, coords_t *c3, coords_t *c4)
-{
-
-	c1->xp = c1->x * d / c1->z;
-	c1->yp = c1->y * d / c1->z;
-
-	c2->xp = c2->x * d / c2->z;
-	c2->yp = c2->y * d / c2->z;
-
-	c3->xp = c3->x * d / c3->z;
-	c3->yp = c3->y * d / c3->z;
-
-	c4->xp = c4->x * d / c4->z;
-	c4->yp = c4->y * d / c4->z;
-}
-
-/*
- * 0 - polygon don't have commo part with qube and is not in qube
- * 1 - part of polygon is in qube
- * 2 - polygon is in qube
- * 3 - polygon surrounds qube
- */
-int
-test_plane(const coords_t *c1, const coords_t *c2, const coords_t *c3,
-    const coords_t *c4, float wx1, float wy1, float wx2, float wy2)
-{
-	float x,y;
-	float bx, by, sx, sy;
-	bool r;
-	int i;
-
-	/*
-	 * 0 - some of line are interaction with qube line
-	 * 1 - none of line are interaction with qube line
-	 */
-	r = lineSegmentIntersection(c1->xp, c1->yp, c2->xp, c2->yp, wx1, wy1, wx1,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c1->xp, c1->yp, c2->xp, c2->yp, wx1, wy2, wx2,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c1->xp, c1->yp, c2->xp, c2->yp, wx2, wy2, wx2,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c1->xp, c1->yp, c2->xp, c2->yp, wx2, wy1, wx1,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c2->xp, c2->yp, c3->xp, c3->yp, wx1, wy1, wx1,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c2->xp, c2->yp, c3->xp, c3->yp, wx1, wy2, wx2,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c2->xp, c2->yp, c3->xp, c3->yp, wx2, wy2, wx2,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c2->xp, c2->yp, c3->xp, c3->yp, wx2, wy1, wx1,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c3->xp, c3->yp, c4->xp, c4->yp, wx1, wy1, wx1,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c3->xp, c3->yp, c4->xp, c4->yp, wx1, wy2, wx2,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c3->xp, c3->yp, c4->xp, c4->yp, wx2, wy2, wx2,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c3->xp, c3->yp, c4->xp, c4->yp, wx2, wy1, wx1,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c4->xp, c4->yp, c1->xp, c1->yp, wx1, wy1, wx1,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c4->xp, c4->yp, c1->xp, c1->yp, wx1, wy2, wx2,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c4->xp, c4->yp, c1->xp, c1->yp, wx2, wy2, wx2,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c4->xp, c4->yp, c1->xp, c1->yp, wx2, wy1, wx1,
-	    wy1, &x, &y) == 0;
-
-	/* part of polygon is in qube */
-	if (r == 0)
-		return 1;
-
-	/*
-	 * we know that no line is cut qube, so if one of polygon point is in the qube
-	 * all other points are in qube, and that means that polygon is in qube
-	 */
-	if (c1->xp < wx2 && c1->xp > wx1 && c1->yp < wy2 && c1->yp > wy1)
-		return 2;
-
-	/*
-	 * we know that no line is cut qube, so if two points of polygon are one
-	 * two diffrent sites of one point of qube that mean that
-	 * polygon is around qube
-	 */
-	 if ((c1->xp > wx1 && c2->xp < wx1) || (c1->xp < wx1 && c2->xp > wx1))
-		return 3;
-
-	/* ok, we don't have other choose this must be polygon from one side */
-	return 0;
-}
-
-void
-draw_boxes(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
-{
-	box_t *b;
-	int i, j;
-	int type[4];
-	int pow, piw, ppmw, psw;
-	float hx, hy;
-
-	piw = ppmw = psw = pow = 0;
-	for (i = 0; i < 4; i++) {
-		b = &boxes[i];
-		type[0] = test_plane(&b->coord[0], &b->coord[1], &b->coord[2],
-		    &b->coord[3], wx1, wy1, wx2, wy2);
-		type[1] = test_plane(&b->coord[4], &b->coord[5], &b->coord[6],
-		    &b->coord[7], wx1, wy1, wx2, wy2);
-		type[2] = test_plane(&b->coord[1], &b->coord[2], &b->coord[6],
-		    &b->coord[5], wx1, wy1, wx2, wy2);
-		type[3] = test_plane(&b->coord[0], &b->coord[3], &b->coord[7],
-		    &b->coord[4], wx1, wy1, wx2, wy2);
-
-		for (j = 0; j < 4; j++) {
-			switch (type[j]) {
-			case 0:
-				/* Plane outside window */
-				pow ++;
-				break;
-			case 1:
-				/* Plane partially meets window */
-				ppmw ++;
-				break;
-			case 2:
-				/* Plane inside window */
-				piw ++;
-				break;
-			case 3:
-				/* Plane surrounds window */
-				psw ++;
-				break;
-			}
-		}
-	}
-
-	hx = (wx1 + wx2) / 2;
-	hy = (wy1 + wy2) / 2;
-	printf("%i %i %i %i wx=%g wx=%g %g %g\n", piw, ppmw, psw, pow, wx1, wx2, hx, hy);
-	if (wx2 - wx1 > 0.1 && wy2 - wy1 > 0.1 &&
-	    (piw > 1 || ppmw > 1 || psw > 1)) {
-		/* continue Warnock */
-		draw_boxes(boxes, wx1, wy1, hx, hy);
-		draw_boxes(boxes, wx1, hy, hx, wy2);
-		draw_boxes(boxes, hx, wy1, wx2, hy);
-		draw_boxes(boxes, hx, hy, wx2, wy2);
-		return;
-	}
-
-	/*draw_plane(b->coord[0], b->coord[1], b->coord[2], b->coord[3]);
-	  draw_plane(b->coord[4], b->coord[5], b->coord[6], b->coord[7]);
-
-	  draw_plane(b->coord[1], b->coord[2], b->coord[6], b->coord[5]);
-	  draw_plane(b->coord[0], b->coord[3], b->coord[7], b->coord[4]);*/
-}
-
-void
 draw_scene(box_t *boxes)
 {
-	int i = 0;
-	box_t *b = NULL;
+	int i;
 
 	/* Project all scene */
 	for (i = 0; i < 4; i++)
-	{
-		b = &boxes[i];
-		project_plane(&b->coord[0], &b->coord[1], &b->coord[2], &b->coord[3]);
-		project_plane(&b->coord[4], &b->coord[5], &b->coord[6], &b->coord[7]);
-	}
+		box_project(&boxes[i], d);
 
 	/* Draw boxes with Warnock Depth Test */
 	draw_boxes(boxes, -2, -2, 2, 2);
 }
 
-void
-coord_translation(coords_t *c, float x, float y, float z) {
-	c->x += x;
-	c->y += y;
-	c->z += z;
-}
-
-void
-box_translation(box_t *b, float x, float y, float z)
-{
-	int i;
-
-	for (i = 0; i < 8; i++)
-		coord_translation(&b->coord[i], x,y,z);
-}
-
-void
-coord_rotate_x(coords_t *c, float alphax)
-{
-	c->y = c->y * cosf(alphax) - c->z * sinf(alphax);
-	c->z = c->y * sinf(alphax) + c->z * cosf(alphax);
-}
-
-void
-box_rotate_x(box_t *b, float alphax)
-{
-	int i;
-
-	for (i = 0; i < 8; i++)
-		coord_rotate_x(&b->coord[i], alphax * M_PI / 180);
-}
-
-void
-coord_rotate_y(coords_t *c, float alphax)
-{
-	c->x = c->x * cosf(alphax) + c->z * sinf(alphax);
-	c->z = - c->x * sinf(alphax) + c->z * cosf(alphax);
-}
-
-void
-box_rotate_y(box_t *b, float alphax)
-{
-	int i;
-
-	for (i = 0; i < 8; i++)
-		coord_rotate_y(&b->coord[i], alphax * M_PI / 180);
-}
-
-void
-coord_rotate_z(coords_t *c, float alphax)
-{
-	c->x = c->x * cosf(alphax) - c->y * sinf(alphax);
-	c->y = c->x * sinf(alphax) + c->y * cosf(alphax);
-}
-
-void
-box_rotate_z(box_t *b, float alphax)
-{
-	int i;
-
-	for (i = 0; i < 8; i++)
-		coord_rotate_z(&b->coord[i], alphax * M_PI / 180);
-}
-
-
 int
 main()
 {
 	int i;
-	float alphax, alphay, alphaz;
 	box_t b[4];
 
-	alphax = alphay = alphaz = 0;
-	b[0].coord[0].x = 1.0;
-	b[0].coord[0].y = 1.0;
-	b[0].coord[0].z = 1.0;
-
-	b[0].coord[1].x = 1.0;
-	b[0].coord[1].y = 2.0;
-	b[0].coord[1].z = 1.0;
-
-	b[0].coord[2].x = 2.0;
-	b[0].coord[2].y = 2.0;
-	b[0].coord[2].z = 1.0;
-
-	b[0].coord[3].x = 2.0;
-	b[0].coord[3].y = 1.0;
-	b[0].coord[3].z = 1.0;
-
-	b[0].coord[4].x = 1.0;
-	b[0].coord[4].y = 1.0;
-	b[0].coord[4].z = 2.0;
-
-	b[0].coord[5].x = 1.0;
-	b[0].coord[5].y = 2.0;
-	b[0].coord[5].z = 2.0;
-
-	b[0].coord[6].x = 2.0;
-	b[0].coord[6].y = 2.0;
-	b[0].coord[6].z = 2.0;
-
-	b[0].coord[7].x = 2.0;
-	b[0].coord[7].y = 1.0;
-	b[0].coord[7].z = 2.0;
-
+	init_box(&b[0]);
 	memcpy(&b[1], &b[0], sizeof(b[0]));
 	memcpy(&b[2], &b[0], sizeof(b[0]));
 	memcpy(&b[3], &b[0], sizeof(b[0]));
