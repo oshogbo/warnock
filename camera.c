@@ -196,7 +196,7 @@ draw_ssw(surface_t *sp, float wx1, float wy1, float wx2, float wy2)
 
 	s.coords[3].xp = wx2;
 	s.coords[3].yp = wy1;
-	
+
 	/* do we need this ? */
 	s.coords[0].z = 1;
 	s.coords[1].z = 1;
