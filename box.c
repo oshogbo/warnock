@@ -68,7 +68,7 @@ box_rotate_x(box_t *b, float alphax)
 {
 	int i;
 
-	for (i = 0; i < PLANE_PER_BOX; i++)
+	for (i = 0; i < SURFACE_PER_BOX; i++)
 		surface_rotate_x(&b->surfaces[i], alphax);
 }
 
@@ -77,7 +77,7 @@ box_rotate_y(box_t *b, float alphax)
 {
 	int i;
 
-	for (i = 0; i < PLANE_PER_BOX; i++)
+	for (i = 0; i < SURFACE_PER_BOX; i++)
 		surface_rotate_y(&b->surfaces[i], alphax);
 }
 
@@ -86,7 +86,7 @@ box_rotate_z(box_t *b, float alphax)
 {
 	int i;
 
-	for (i = 0; i < PLANE_PER_BOX; i++)
+	for (i = 0; i < SURFACE_PER_BOX; i++)
 		surface_rotate_z(&b->surfaces[i], alphax);
 }
 
@@ -95,7 +95,7 @@ box_translation(box_t *b, float x, float y, float z)
 {
 	int i;
 
-	for (i = 0; i < PLANE_PER_BOX; i++)
+	for (i = 0; i < SURFACE_PER_BOX; i++)
 		surface_translation(&b->surfaces[i], x, y, z);
 }
 
@@ -104,7 +104,7 @@ box_project(box_t *b, float d)
 {
 	int i;
 
-	for (i = 0; i < PLANE_PER_BOX; i++)
+	for (i = 0; i < SURFACE_PER_BOX; i++)
 		surface_project(&b->surfaces[i], d);
 }
 
@@ -113,7 +113,7 @@ box_draw(box_t *box)
 {
 	int i;
 
-	for (i = 0; i < PLANE_PER_BOX; i++)
+	for (i = 0; i < SURFACE_PER_BOX; i++)
 		surface_draw(&box->surfaces[i]);
 }
 
@@ -122,6 +122,6 @@ box_set_color(box_t *box, float r, float g, float b)
 {
 	int i;
 
-	for (i = 0; i < PLANE_PER_BOX; i++)
+	for (i = 0; i < SURFACE_PER_BOX; i++)
 		surface_set_color(&box->surfaces[i], r, g, b);
 }
