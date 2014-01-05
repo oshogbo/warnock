@@ -184,31 +184,37 @@ init_window(int width, int height, const char *name, bool fs)
 void
 draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
-	int i, j, type;
+	int i, j, type, pos;
 	int sow_count, spmw_count, siw_count, ssw_count;
-	surface_t *surfaces[SURFACE_PER_BOX * 4];
+	surface_t *surfaces[SURFACE_PER_BOX * 4], *sow[SURFACE_PER_BOX * 4];
+	surface_t *spmw[SURFACE_PER_BOX * 4], *siw[SURFACE_PER_BOX * 4];
+	surface_t *ssw[SURFACE_PER_BOX * 4];
 
 	sow_count = spmw_count = siw_count = ssw_count = 0;
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < COORDS_PER_SURFACE; j++) {
-			surfaces[i * COORDS_PER_SURFACE + j] =
-			    &boxes[i].surfaces[j];
+			pos = i * COORDS_PER_SURFACE + j;
+			surfaces[pos] = &boxes[i].surfaces[j];
 			type = test_surface(surfaces[i], wx1, wy1, wx2, wy2);
 			switch (type) {
 				case 0:
 					/* Surface outside window */
+					sow[sow_count] = surfaces[pos];
 					sow_count ++;
 					break;
 				case 1:
 					/* Surface partially meets window */
+					spmw[spmw_count] = surfaces[pos];
 					spmw_count ++;
 					break;
 				case 2:
 					/* Surface inside window */
+					siw[siw_count] = surfaces[pos];
 					siw_count ++;
 					break;
 				case 3:
 					/* Surface surrounds window */
+					ssw[ssw_count] = surfaces[pos];
 					ssw_count ++;
 					break;
 			}
