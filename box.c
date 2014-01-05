@@ -116,3 +116,12 @@ box_draw(box_t *box)
 	for (i = 0; i < PLANE_PER_BOX; i++)
 		plane_draw(&box->planes[i]);
 }
+
+void
+box_set_color(box_t *box, float r, float g, float b)
+{
+	int i;
+
+	for (i = 0; i < PLANE_PER_BOX; i++)
+		plane_set_color(&box->planes[i], r, g, b);
+}

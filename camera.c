@@ -17,20 +17,6 @@ float d = 330.0;
 bool warnock = true;
 bool pkeys[512];
 
-void
-set_color(int num)
-{
-
-	switch(num)
-	{
-		case 0: glColor3f(1.0, 0.0, 0.0); break;
-		case 1: glColor3f(1.0, 1.0, 0.0); break;
-		case 2: glColor3f(0.0, 0.0, 1.0); break;
-		case 3: glColor3f(0.0, 1.0, 0.0); break;
-		case 4: glColor3f(0.0, 0.0, 0.0); break;
-	}
-}
-
 // http://alienryderflex.com/intersect/
 int
 lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
@@ -267,6 +253,10 @@ main()
 	memcpy(&b[1], &b[0], sizeof(b[0]));
 	memcpy(&b[2], &b[0], sizeof(b[0]));
 	memcpy(&b[3], &b[0], sizeof(b[0]));
+	box_set_color(&b[0], 1.0, 0.0, 0.0);
+	box_set_color(&b[1], 0.0, 1.0, 0.0);
+	box_set_color(&b[2], 0.0, 0.0, 1.0);
+	box_set_color(&b[3], 1.0, 0.0, 1.0);
 
 	box_translation(&b[0],    0.0, -720.0,  600.0);
 	box_translation(&b[1], -900.0, -720.0,  600.0);
