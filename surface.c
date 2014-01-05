@@ -61,6 +61,11 @@ surface_rotate_z(surface_t *p, float alphax)
 void
 surface_draw(surface_t *p)
 {
+	int i;
+
+	for (i = 0; i < 4; i++)
+		if (p->coords[i].z < 0.01)
+			return;
 
 	glColor3f(p->r, p->g, p->b);
 	surface_draw_points(p->coords[0].xp, p->coords[0].yp,

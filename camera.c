@@ -124,14 +124,14 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 
 	/* part of polygon is in qube */
 	if (r == 0)
-		return 1;
+		return (1);
 
 	/*
 	 * we know that no line is cut qube, so if one of polygon point is in the qube
 	 * all other points are in qube, and that means that polygon is in qube
 	 */
 	if (c[0]->xp < wx2 && c[0]->xp > wx1 && c[0]->yp < wy2 && c[0]->yp > wy1)
-		return 2;
+		return (2);
 
 	/*
 	 * we know that no line is cut qube, so if two points of polygon are one
@@ -145,10 +145,10 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	 sy = fmin(c[0]->yp, fmin(c[1]->yp, fmin(c[2]->yp, c[3]->yp)));
 
 	 if (bx > wx1 && sx < wx1 && by > wy1 && sy < wy1)
-		return 3;
+		return (3);
 
 	/* ok, we don't have other choose this must be polygon from one side */
-	return 0;
+	return (0);
 }
 
 
@@ -211,6 +211,18 @@ draw_ssw(surface_t *sp, float wx1, float wy1, float wx2, float wy2)
 	surface_draw(&s);
 }
 
+static double
+dest(surface_t *s)
+{
+	float x, y, z;
+
+	x = s->coords[0].x;
+	y = s->coords[0].y;
+	z = s->coords[0].z;
+
+	return (sqrt(x * x + y * y + z * z));
+}
+
 void
 draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
@@ -250,18 +262,37 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 		}
 	}
 
-	printf("%i %i %i %i\n", sow_count, spmw_count, siw_count, ssw_count);
-	if (sow_count + 1 != SURFACE_PER_BOX * 4 &&
-	    sqrt((wx2 - wx1) * (wx2 - wx1)) > 5) {
-		float hx, hy;
+	if (sow_count == SURFACE_PER_BOX * 4)
+		return;
 
-		hx = (wx1 + wx2) / 2;
-		hy = (wy1 + wy2) / 2;
+	if (siw_count > 1 || spmw_count > 1 || ssw_count > 1 ||
+	    siw_count + spmw_count + ssw_count > 1) {
+		if (sqrt((wx2 - wx1) * (wx2 - wx1)) <= 5) {
+			surface_t *withmaxd;
+			float maxd, d;
 
-		draw_boxes_warnock(boxes, wx1, wy1, hx, hy);
-		draw_boxes_warnock(boxes, wx1, hy, hx, wy2);
-		draw_boxes_warnock(boxes, hx, wy1, wx2, hy);
-		draw_boxes_warnock(boxes, hx, hy, wx2, wy2);
+			withmaxd = ssw[0];
+			maxd = dest(ssw[0]);
+			for (i = 1; i < ssw_count; i++) {
+				d = dest(ssw[i]);
+				if (d > maxd) {
+					withmaxd = ssw[i];
+					maxd = d;
+				}
+			}
+
+			draw_ssw(withmaxd, wx1, wy1, wx2, wy2);
+		} else {
+			float hx, hy;
+
+			hx = (wx1 + wx2) / 2;
+			hy = (wy1 + wy2) / 2;
+
+			draw_boxes_warnock(boxes, wx1, wy1, hx, hy);
+			draw_boxes_warnock(boxes, wx1, hy, hx, wy2);
+			draw_boxes_warnock(boxes, hx, wy1, wx2, hy);
+			draw_boxes_warnock(boxes, hx, hy, wx2, wy2);
+		}
 		return;
 	}
 
@@ -269,7 +300,8 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 		surface_draw(siw[0]);
 	} else if (spmw_count == 1) {
 		glEnable(GL_SCISSOR_TEST);
-	        glScissor(300 + wx1, 240 + wy1, (int)sqrt((wx1 - wx2) * (wx1 - wx2)),
+	        glScissor(300 + wx1, 240 + wy1,
+		    (int)sqrt((wx1 - wx2) * (wx1 - wx2)),
 		    (int)sqrt((wy1 - wy2) * (wy1 - wy2)));
 		surface_draw(spmw[0]);
 		glDisable(GL_SCISSOR_TEST);
