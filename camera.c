@@ -8,9 +8,7 @@
 #include "box.h"
 #include "surface.h"
 
-#define BACKGROUND 4
-
-# define PRESSEDKEY(k) if(pkeys[k]) \
+#define PRESSEDKEY(k) if(pkeys[k]) \
 	for(i = 0; i < 4; i++)
 
 float d = 330.0;
