@@ -1,42 +1,50 @@
+#include <stdbool.h>
+
 #include "box.h"
 
 /*
  * forward back
  */
 static void
-init_box_fb(plane_t *p, float f)
+init_box_fb(plane_t *p, bool b)
 {
+	float f;
 
-	coord_set(&p->coords[0], 1.0, 1.0, f);
-	coord_set(&p->coords[1], 1.0, 2.0, f);
-	coord_set(&p->coords[2], 2.0, 2.0, f);
-	coord_set(&p->coords[3], 2.0, 1.0, f);
+	f = (b ? 1.0 : 2.0) * 300;
+	coord_set(&p->coords[0], 300.0, 240.0, f);
+	coord_set(&p->coords[1], 300.0, 480.0, f);
+	coord_set(&p->coords[2], 600.0, 480.0, f);
+	coord_set(&p->coords[3], 600.0, 240.0, f);
 }
 
 /*
  * top bottom
  */
 static void
-init_box_tb(plane_t *p, float f)
+init_box_tb(plane_t *p, bool b)
 {
+	float f;
 
-	coord_set(&p->coords[0], 1.0, f, 1.0);
-	coord_set(&p->coords[1], 1.0, f, 2.0);
-	coord_set(&p->coords[2], 2.0, f, 2.0);
-	coord_set(&p->coords[3], 2.0, f, 1.0);
+	f = (b ? 1.0 : 2.0) * 240.0;
+	coord_set(&p->coords[0], 300.0, f, 300.0);
+	coord_set(&p->coords[1], 300.0, f, 600.0);
+	coord_set(&p->coords[2], 600.0, f, 600.0);
+	coord_set(&p->coords[3], 600.0, f, 300.0);
 }
 
 /*
  * left right
  */
 static void
-init_box_lr(plane_t *p, float f)
+init_box_lr(plane_t *p, bool r)
 {
+	float f;
 
-	coord_set(&p->coords[0], f, 1.0, 1.0);
-	coord_set(&p->coords[1], f, 1.0, 2.0);
-	coord_set(&p->coords[2], f, 2.0, 2.0);
-	coord_set(&p->coords[3], f, 2.0, 1.0);
+	f = (r ? 1.0 : 2.0) * 300.0;
+	coord_set(&p->coords[0], f, 240.0, 300.0);
+	coord_set(&p->coords[1], f, 240.0, 600.0);
+	coord_set(&p->coords[2], f, 480.0, 600.0);
+	coord_set(&p->coords[3], f, 480.0, 300.0);
 }
 
 void
@@ -45,14 +53,14 @@ init_box(box_t *b)
 	int i;
 
 	i = 0;
-	init_box_fb(&b->planes[i++], 1.0);
-	init_box_fb(&b->planes[i++], 2.0);
+	init_box_fb(&b->planes[i++], false);
+	init_box_fb(&b->planes[i++], true);
 
-	init_box_tb(&b->planes[i++], 1.0);
-	init_box_tb(&b->planes[i++], 2.0);
+	init_box_tb(&b->planes[i++], false);
+	init_box_tb(&b->planes[i++], true);
 
-	init_box_lr(&b->planes[i++], 1.0);
-	init_box_lr(&b->planes[i++], 2.0);
+	init_box_lr(&b->planes[i++], false);
+	init_box_lr(&b->planes[i++], true);
 }
 
 void

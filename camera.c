@@ -6,14 +6,15 @@
 #include <GL/gl.h>
 
 #include "box.h"
+#include "plane.h"
 
 #define BACKGROUND 4
 
 # define PRESSEDKEY(k) if(pkeys[k]) \
 	for(i = 0; i < 4; i++)
 
-float d = 2.0;
-
+float d = 330.0;
+bool warnock = true;
 bool pkeys[512];
 
 void
@@ -31,7 +32,7 @@ set_color(int num)
 }
 
 // http://alienryderflex.com/intersect/
-/*int
+int
 lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
     float Cy, float Dx, float Dy, float *X, float *Y)
 {
@@ -39,12 +40,12 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
 	float distAB, theCos, theSin, newX, ABpos ;
 
 	//  Fail if either line segment is zero-length.
-	if (Ax==Bx && Ay==By || Cx==Dx && Cy==Dy)
+	if ((Ax==Bx && Ay==By) || (Cx==Dx && Cy==Dy))
 		return 0;
 
 	//  Fail if the segments share an end-point.
-	if (Ax==Cx && Ay==Cy || Bx==Cx && By==Cy ||
-	    Ax==Dx && Ay==Dy || Bx==Dx && By==Dy) {
+	if ((Ax==Cx && Ay==Cy) || (Bx==Cx && By==Cy) ||
+	    (Ax==Dx && Ay==Dy) || (Bx==Dx && By==Dy)) {
 		return 0;
 	}
 
@@ -65,7 +66,7 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
 	Dy  =Dy*theCos-Dx*theSin; Dx=newX;
 
 	//  Fail if segment C-D doesn't cross line A-B.
-	if (Cy<0. && Dy<0. || Cy>=0. && Dy>=0.)
+	if ((Cy<0. && Dy<0.) || (Cy>=0. && Dy>=0.))
 	    return 0;
 
 	//  (3) Discover the position of the intersection point along line A-B.
@@ -81,7 +82,91 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
 
 	//  Success.
 	return 1;
-}*/
+}
+
+/*
+ * 0 - polygon don't have commo part with qube and is not in qube
+ * 1 - part of polygon is in qube
+ * 2 - polygon is in qube
+ * 3 - polygon surrounds qube
+ */
+int
+test_plane(const plane_t *p, float wx1, float wy1, float wx2, float wy2)
+{
+	float x,y;
+	float bx, by, sx, sy;
+	bool r;
+	int i;
+	const coord_t *c[COORDS_PER_PLANE];
+
+	for (i = 0; i < COORDS_PER_PLANE; i++)
+		c[i] = &p->coords[i];
+	/*
+	 * 0 - some of line are interaction with qube line
+	 * 1 - none of line are interaction with qube line
+	 */
+	r = lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx1, wy1, wx1,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx1, wy2, wx2,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx2, wy2, wx2,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx2, wy1, wx1,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp, wx1, wy1, wx1,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp, wx1, wy2, wx2,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp, wx2, wy2, wx2,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp, wx2, wy1, wx1,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp, wx1, wy1, wx1,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp, wx1, wy2, wx2,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp, wx2, wy2, wx2,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp, wx2, wy1, wx1,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp, wx1, wy1, wx1,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp, wx1, wy2, wx2,
+	    wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp, wx2, wy2, wx2,
+	    wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp, wx2, wy1, wx1,
+	    wy1, &x, &y) == 0;
+
+	/* part of polygon is in qube */
+	if (r == 0)
+		return 1;
+
+	/*
+	 * we know that no line is cut qube, so if one of polygon point is in the qube
+	 * all other points are in qube, and that means that polygon is in qube
+	 */
+	if (c[0]->xp < wx2 && c[0]->xp > wx1 && c[0]->yp < wy2 && c[0]->yp > wy1)
+		return 2;
+
+	/*
+	 * we know that no line is cut qube, so if two points of polygon are one
+	 * two diffrent sites of one point of qube that mean that
+	 * polygon is around qube
+	 */
+	 bx = fmax(c[0]->xp, fmax(c[1]->xp, fmax(c[2]->xp, c[3]->xp)));
+	 sx = fmin(c[0]->xp, fmin(c[1]->xp, fmin(c[2]->xp, c[3]->xp)));
+
+	 by = fmax(c[0]->yp, fmax(c[1]->yp, fmax(c[2]->yp, c[3]->yp)));
+	 sy = fmin(c[0]->yp, fmin(c[1]->yp, fmin(c[2]->yp, c[3]->yp)));
+
+	 if (bx > wx1 && sx < wx1 && by > wy1 && sy < wy1)
+		return 3;
+
+	/* ok, we don't have other choose this must be polygon from one side */
+	return 0;
+}
+
 
 void
 init_window(int width, int height, const char *name, bool fs)
@@ -102,7 +187,7 @@ init_window(int width, int height, const char *name, bool fs)
 	glClearDepth(1.0);
 
 	glLoadIdentity();
-	glOrtho(-2, 2, -2, 2, 1.0, -1.0);
+	glOrtho(-width / 2, width / 2.0, - height / 2.0, height / 2.0, 1, -1);
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
@@ -111,11 +196,45 @@ init_window(int width, int height, const char *name, bool fs)
 }
 
 void
-draw_boxes(box_t *boxes,
-    __attribute__((unused)) float wx1,
-    __attribute__((unused)) float wy1,
-    __attribute__((unused)) float wx2,
-    __attribute__((unused)) float wy2)
+draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
+{
+	int i, j, type;
+	int pow_count, ppmw_count, piw_count, psw_count;
+	plane_t *planes[PLANE_PER_BOX * 4];
+
+	pow_count = ppmw_count = piw_count = psw_count = 0;
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < COORDS_PER_PLANE; j++) {
+			planes[i * COORDS_PER_PLANE + j] =
+			    &boxes[i].planes[j];
+			type = test_plane(planes[i], wx1, wy1, wx2, wy2);
+			switch (type) {
+				case 0:
+					/* Plane outside window */
+					pow_count ++;
+					break;
+				case 1:
+					/* Plane partially meets window */
+					ppmw_count ++;
+					break;
+				case 2:
+					/* Plane inside window */
+					piw_count ++;
+					break;
+				case 3:
+					/* Plane surrounds window */
+					psw_count ++;
+					break;
+			}
+		}
+	}
+
+	for (i = 0; i < 4; i++)
+		box_draw(boxes + i);
+}
+
+void
+draw_boxes(box_t *boxes)
 {
 	int i;
 
@@ -132,8 +251,10 @@ draw_scene(box_t *boxes)
 	for (i = 0; i < 4; i++)
 		box_project(&boxes[i], d);
 
-	/* Draw boxes with Warnock Depth Test */
-	draw_boxes(boxes, -2, -2, 2, 2);
+	if (warnock)	/* Draw boxes with Warnock Depth Test */
+		draw_boxes_warnock(boxes, -2, -2, 2, 2);
+	else		/* or not */
+		draw_boxes(boxes);
 }
 
 int
@@ -147,10 +268,10 @@ main()
 	memcpy(&b[2], &b[0], sizeof(b[0]));
 	memcpy(&b[3], &b[0], sizeof(b[0]));
 
-	box_translation(&b[0], 0, -3, 2);
-	box_translation(&b[1], -3, -3, 2);
-	box_translation(&b[2], 0, -3, 4);
-	box_translation(&b[3], -3, -3, 4);
+	box_translation(&b[0],    0.0, -720.0,  600.0);
+	box_translation(&b[1], -900.0, -720.0,  600.0);
+	box_translation(&b[2],    0.0, -720.0, 1200.0);
+	box_translation(&b[3], -900.0, -720.0, 1200.0);
 
 	init_window(600, 480, "gk", false);
 
@@ -182,35 +303,39 @@ main()
 
 		/* EVENTS */
 		PRESSEDKEY(SDLK_UP)
-			box_translation(b + i, 0, 0, -0.01);
+			box_translation(b + i, 0, 0, -10.0);
 		PRESSEDKEY(SDLK_DOWN)
-			box_translation(b + i, 0, 0, 0.01);
+			box_translation(b + i, 0, 0, 10.0);
 		PRESSEDKEY(SDLK_LEFT)
-			box_translation(b + i, 0.01, 0, 0);
+			box_translation(b + i, 10.0, 0, 0);
 		PRESSEDKEY(SDLK_RIGHT)
-			box_translation(b + i, -0.01, 0, 0);
+			box_translation(b + i, -10.0, 0, 0);
 		PRESSEDKEY(SDLK_PAGEUP)
-			box_translation(b + i, 0, 0.01, 0);
+			box_translation(b + i, 0, 10.0, 0);
 		PRESSEDKEY(SDLK_PAGEDOWN)
-			box_translation(b + i, 0, -0.01, 0);
+			box_translation(b + i, 0, -10.0, 0);
 		PRESSEDKEY(SDLK_w)
-			box_rotate_x(b + i, 0.05);
+			box_rotate_x(b + i, 0.5);
 		PRESSEDKEY(SDLK_s)
-			box_rotate_x(b + i, -0.05);
+			box_rotate_x(b + i, -0.5);
 		PRESSEDKEY(SDLK_a)
-			box_rotate_y(b + i, 0.05);
+			box_rotate_y(b + i, 0.5);
 		PRESSEDKEY(SDLK_d)
-			box_rotate_y(b + i, -0.05);
+			box_rotate_y(b + i, -0.5);
 		PRESSEDKEY(SDLK_e)
-			box_rotate_z(b + i, 0.05);
+			box_rotate_z(b + i, 0.5);
 		PRESSEDKEY(SDLK_q)
-			box_rotate_z(b + i, -0.05);
+			box_rotate_z(b + i, -0.5);
 		PRESSEDKEY(SDLK_r)
-			d += 0.001;
+			d += 1.0;
 		PRESSEDKEY(SDLK_f)
-			d -= 0.001;
+			d -= 1.0;
 		if (d < 0)
 			d = 0.001;
+		PRESSEDKEY(SDLK_1)
+			warnock = true;
+		PRESSEDKEY(SDLK_2)
+			warnock = false;
 
 		SDL_GL_SwapBuffers();
 	}
