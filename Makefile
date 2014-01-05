@@ -3,7 +3,7 @@ CFLAGS=-Wall -Wextra
 TARGET=a.out
 LIBS=-lm -lGL -lSDL
 
-SRC=camera.c box.c coord.c plane.c
+SRC=camera.c box.c coord.c surface.c
 
 OBJ=$(SRC:.c=.o)
 

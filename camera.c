@@ -6,7 +6,7 @@
 #include <GL/gl.h>
 
 #include "box.h"
-#include "plane.h"
+#include "surface.h"
 
 #define BACKGROUND 4
 
@@ -77,15 +77,15 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
  * 3 - polygon surrounds qube
  */
 int
-test_plane(const plane_t *p, float wx1, float wy1, float wx2, float wy2)
+test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 {
 	float x,y;
 	float bx, by, sx, sy;
 	bool r;
 	int i;
-	const coord_t *c[COORDS_PER_PLANE];
+	const coord_t *c[COORDS_PER_SURFACE];
 
-	for (i = 0; i < COORDS_PER_PLANE; i++)
+	for (i = 0; i < COORDS_PER_SURFACE; i++)
 		c[i] = &p->coords[i];
 	/*
 	 * 0 - some of line are interaction with qube line
@@ -185,31 +185,31 @@ void
 draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
 	int i, j, type;
-	int pow_count, ppmw_count, piw_count, psw_count;
-	plane_t *planes[PLANE_PER_BOX * 4];
+	int sow_count, spmw_count, siw_count, ssw_count;
+	surface_t *surfaces[SURFACE_PER_BOX * 4];
 
-	pow_count = ppmw_count = piw_count = psw_count = 0;
+	sow_count = spmw_count = siw_count = ssw_count = 0;
 	for (i = 0; i < 4; i++) {
-		for (j = 0; j < COORDS_PER_PLANE; j++) {
-			planes[i * COORDS_PER_PLANE + j] =
-			    &boxes[i].planes[j];
-			type = test_plane(planes[i], wx1, wy1, wx2, wy2);
+		for (j = 0; j < COORDS_PER_SURFACE; j++) {
+			surfaces[i * COORDS_PER_SURFACE + j] =
+			    &boxes[i].surfaces[j];
+			type = test_surface(surfaces[i], wx1, wy1, wx2, wy2);
 			switch (type) {
 				case 0:
-					/* Plane outside window */
-					pow_count ++;
+					/* Surface outside window */
+					sow_count ++;
 					break;
 				case 1:
-					/* Plane partially meets window */
-					ppmw_count ++;
+					/* Surface partially meets window */
+					spmw_count ++;
 					break;
 				case 2:
-					/* Plane inside window */
-					piw_count ++;
+					/* Surface inside window */
+					siw_count ++;
 					break;
 				case 3:
-					/* Plane surrounds window */
-					psw_count ++;
+					/* Surface surrounds window */
+					ssw_count ++;
 					break;
 			}
 		}

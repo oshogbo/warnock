@@ -2,12 +2,12 @@
 #define __BOX_H__
 
 #include "coord.h"
-#include "plane.h"
+#include "surface.h"
 
-#define PLANE_PER_BOX 6
+#define SURFACE_PER_BOX 6
 
 typedef struct {
-	plane_t planes[PLANE_PER_BOX];
+	surface_t surfaces[SURFACE_PER_BOX];
 	int color_schame;
 } box_t;
 

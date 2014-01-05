@@ -6,7 +6,7 @@
  * forward back
  */
 static void
-init_box_fb(plane_t *p, bool b)
+init_box_fb(surface_t *p, bool b)
 {
 	float f;
 
@@ -21,7 +21,7 @@ init_box_fb(plane_t *p, bool b)
  * top bottom
  */
 static void
-init_box_tb(plane_t *p, bool b)
+init_box_tb(surface_t *p, bool b)
 {
 	float f;
 
@@ -36,7 +36,7 @@ init_box_tb(plane_t *p, bool b)
  * left right
  */
 static void
-init_box_lr(plane_t *p, bool r)
+init_box_lr(surface_t *p, bool r)
 {
 	float f;
 
@@ -53,14 +53,14 @@ init_box(box_t *b)
 	int i;
 
 	i = 0;
-	init_box_fb(&b->planes[i++], false);
-	init_box_fb(&b->planes[i++], true);
+	init_box_fb(&b->surfaces[i++], false);
+	init_box_fb(&b->surfaces[i++], true);
 
-	init_box_tb(&b->planes[i++], false);
-	init_box_tb(&b->planes[i++], true);
+	init_box_tb(&b->surfaces[i++], false);
+	init_box_tb(&b->surfaces[i++], true);
 
-	init_box_lr(&b->planes[i++], false);
-	init_box_lr(&b->planes[i++], true);
+	init_box_lr(&b->surfaces[i++], false);
+	init_box_lr(&b->surfaces[i++], true);
 }
 
 void
@@ -69,7 +69,7 @@ box_rotate_x(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < PLANE_PER_BOX; i++)
-		plane_rotate_x(&b->planes[i], alphax);
+		surface_rotate_x(&b->surfaces[i], alphax);
 }
 
 void
@@ -78,7 +78,7 @@ box_rotate_y(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < PLANE_PER_BOX; i++)
-		plane_rotate_y(&b->planes[i], alphax);
+		surface_rotate_y(&b->surfaces[i], alphax);
 }
 
 void
@@ -87,7 +87,7 @@ box_rotate_z(box_t *b, float alphax)
 	int i;
 
 	for (i = 0; i < PLANE_PER_BOX; i++)
-		plane_rotate_z(&b->planes[i], alphax);
+		surface_rotate_z(&b->surfaces[i], alphax);
 }
 
 void
@@ -96,7 +96,7 @@ box_translation(box_t *b, float x, float y, float z)
 	int i;
 
 	for (i = 0; i < PLANE_PER_BOX; i++)
-		plane_translation(&b->planes[i], x, y, z);
+		surface_translation(&b->surfaces[i], x, y, z);
 }
 
 void
@@ -105,7 +105,7 @@ box_project(box_t *b, float d)
 	int i;
 
 	for (i = 0; i < PLANE_PER_BOX; i++)
-		plane_project(&b->planes[i], d);
+		surface_project(&b->surfaces[i], d);
 }
 
 void
@@ -114,7 +114,7 @@ box_draw(box_t *box)
 	int i;
 
 	for (i = 0; i < PLANE_PER_BOX; i++)
-		plane_draw(&box->planes[i]);
+		surface_draw(&box->surfaces[i]);
 }
 
 void
@@ -123,5 +123,5 @@ box_set_color(box_t *box, float r, float g, float b)
 	int i;
 
 	for (i = 0; i < PLANE_PER_BOX; i++)
-		plane_set_color(&box->planes[i], r, g, b);
+		surface_set_color(&box->surfaces[i], r, g, b);
 }
