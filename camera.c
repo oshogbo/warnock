@@ -16,7 +16,7 @@ bool warnock = true;
 bool pkeys[512];
 
 // http://alienryderflex.com/intersect/
-int
+static int
 lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
     float Cy, float Dx, float Dy, float *X, float *Y)
 {
@@ -74,7 +74,7 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
  * 2 - polygon is in qube
  * 3 - polygon surrounds qube
  */
-int
+static int
 test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 {
 	float x,y;
@@ -89,38 +89,38 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	 * 0 - some of line are interaction with qube line
 	 * 1 - none of line are interaction with qube line
 	 */
-	r = lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx1, wy1, wx1,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx1, wy2, wx2,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx2, wy2, wx2,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx2, wy1, wx1,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp, wx1, wy1, wx1,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp, wx1, wy2, wx2,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp, wx2, wy2, wx2,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp, wx2, wy1, wx1,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp, wx1, wy1, wx1,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp, wx1, wy2, wx2,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp, wx2, wy2, wx2,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp, wx2, wy1, wx1,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp, wx1, wy1, wx1,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp, wx1, wy2, wx2,
-	    wy2, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp, wx2, wy2, wx2,
-	    wy1, &x, &y) == 0;
-	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp, wx2, wy1, wx1,
-	    wy1, &x, &y) == 0;
+	r = lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp, wx1,
+	    wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp,
+	    wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp,
+	    wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[0]->xp, c[0]->yp, c[1]->xp, c[1]->yp,
+	    wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp,
+	    wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp,
+	    wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp,
+	    wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[1]->xp, c[1]->yp, c[2]->xp, c[2]->yp,
+	    wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp,
+	    wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp,
+	    wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp,
+	    wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[2]->xp, c[2]->yp, c[3]->xp, c[3]->yp,
+	    wx2, wy1, wx1, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp,
+	    wx1, wy1, wx1, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp,
+	    wx1, wy2, wx2, wy2, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp,
+	    wx2, wy2, wx2, wy1, &x, &y) == 0;
+	r &= lineSegmentIntersection(c[3]->xp, c[3]->yp, c[0]->xp, c[0]->yp,
+	    wx2, wy1, wx1, wy1, &x, &y) == 0;
 
 	/* part of polygon is in qube */
 	if (r == 0)
@@ -152,7 +152,7 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 }
 
 
-void
+static void
 init_window(int width, int height, const char *name, bool fs)
 {
 	Uint32 flags;
@@ -179,25 +179,56 @@ init_window(int width, int height, const char *name, bool fs)
 	glEnable(GL_TEXTURE_2D);
 }
 
+static void
+draw_ssw(surface_t *sp, float wx1, float wy1, float wx2, float wy2)
+{
+	surface_t s;
+
+	/* set 2d coords */
+	s.coords[0].xp = wx1;
+	s.coords[0].yp = wy1;
+
+	s.coords[1].xp = wx1;
+	s.coords[1].yp = wy2;
+
+	s.coords[2].xp = wx2;
+	s.coords[2].yp = wy2;
+
+	s.coords[3].xp = wx2;
+	s.coords[3].yp = wy1;
+	
+	/* do we need this ? */
+	s.coords[0].z = 1;
+	s.coords[1].z = 1;
+	s.coords[2].z = 1;
+	s.coords[3].z = 1;
+
+	/* set coolor */
+	s.r = sp->r;
+	s.g = sp->g;
+	s.b = sp->b;
+
+	surface_draw(&s);
+}
+
 void
 draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
 	int i, j, type, pos;
 	int sow_count, spmw_count, siw_count, ssw_count;
-	surface_t *surfaces[SURFACE_PER_BOX * 4], *sow[SURFACE_PER_BOX * 4];
+	surface_t *surfaces[SURFACE_PER_BOX * 4], *ssw[SURFACE_PER_BOX * 4];
 	surface_t *spmw[SURFACE_PER_BOX * 4], *siw[SURFACE_PER_BOX * 4];
-	surface_t *ssw[SURFACE_PER_BOX * 4];
 
 	sow_count = spmw_count = siw_count = ssw_count = 0;
 	for (i = 0; i < 4; i++) {
-		for (j = 0; j < COORDS_PER_SURFACE; j++) {
-			pos = i * COORDS_PER_SURFACE + j;
+		for (j = 0; j < SURFACE_PER_BOX; j++) {
+			pos = i * SURFACE_PER_BOX + j;
 			surfaces[pos] = &boxes[i].surfaces[j];
+
 			type = test_surface(surfaces[i], wx1, wy1, wx2, wy2);
 			switch (type) {
 				case 0:
 					/* Surface outside window */
-					sow[sow_count] = surfaces[pos];
 					sow_count ++;
 					break;
 				case 1:
@@ -219,11 +250,35 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 		}
 	}
 
-	for (i = 0; i < 4; i++)
-		box_draw(boxes + i);
+	printf("%i %i %i %i\n", sow_count, spmw_count, siw_count, ssw_count);
+	if (sow_count + 1 != SURFACE_PER_BOX * 4 &&
+	    sqrt((wx2 - wx1) * (wx2 - wx1)) > 5) {
+		float hx, hy;
+
+		hx = (wx1 + wx2) / 2;
+		hy = (wy1 + wy2) / 2;
+
+		draw_boxes_warnock(boxes, wx1, wy1, hx, hy);
+		draw_boxes_warnock(boxes, wx1, hy, hx, wy2);
+		draw_boxes_warnock(boxes, hx, wy1, wx2, hy);
+		draw_boxes_warnock(boxes, hx, hy, wx2, wy2);
+		return;
+	}
+
+	if (siw_count == 1) {
+		surface_draw(siw[0]);
+	} else if (spmw_count == 1) {
+		glEnable(GL_SCISSOR_TEST);
+	        glScissor(300 + wx1, 240 + wy1, (int)sqrt((wx1 - wx2) * (wx1 - wx2)),
+		    (int)sqrt((wy1 - wy2) * (wy1 - wy2)));
+		surface_draw(spmw[0]);
+		glDisable(GL_SCISSOR_TEST);
+	} else if (ssw_count == 1) {
+		draw_ssw(ssw[0], wx1, wy1, wx2, wy2);
+	}
 }
 
-void
+static void
 draw_boxes(box_t *boxes)
 {
 	int i;
@@ -232,7 +287,7 @@ draw_boxes(box_t *boxes)
 		box_draw(boxes + i);
 }
 
-void
+static void
 draw_scene(box_t *boxes)
 {
 	int i;
@@ -241,8 +296,9 @@ draw_scene(box_t *boxes)
 	for (i = 0; i < 4; i++)
 		box_project(&boxes[i], d);
 
+	printf("==========================\n");
 	if (warnock)	/* Draw boxes with Warnock Depth Test */
-		draw_boxes_warnock(boxes, -2, -2, 2, 2);
+		draw_boxes_warnock(boxes, -300, -240, 300, 240);
 	else		/* or not */
 		draw_boxes(boxes);
 }
