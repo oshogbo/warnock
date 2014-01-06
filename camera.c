@@ -281,7 +281,7 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 			maxd = dest(surf[0]);
 			for (i = 1; i < surf_count; i++) {
 				d = dest(surf[i]);
-				if (d > maxd) {
+				if (d < maxd) {
 					withmaxd = surf[i];
 					maxd = d;
 				}
