@@ -271,7 +271,7 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 	if (sow_count == SURFACE_PER_BOX * 4)
 		return;
 
-	if (siw_count > 1 || spmw_count > 1 || (tricky ? 1 : ssw_count) > 1 ||
+	if (siw_count > 1 || spmw_count > 1 || (tricky ? 0 : ssw_count) > 1 ||
 	    siw_count + spmw_count + (tricky ? 0 : ssw_count) > 1) {
 		if (sqrt((wx2 - wx1) * (wx2 - wx1)) <= 5) {
 			surface_t *withmaxd;
