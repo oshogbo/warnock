@@ -226,18 +226,18 @@ dest(surface_t *s)
 void
 draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 {
-	int i, j, type, pos;
-	int sow_count, spmw_count, siw_count, ssw_count;
-	surface_t *surfaces[SURFACE_PER_BOX * 4], *ssw[SURFACE_PER_BOX * 4];
+	int i, j, type;
+	int sow_count, spmw_count, siw_count, ssw_count, surf_count;
+	surface_t *surf[SURFACE_PER_BOX * 4], *ssw[SURFACE_PER_BOX * 4];
 	surface_t *spmw[SURFACE_PER_BOX * 4], *siw[SURFACE_PER_BOX * 4];
+	surface_t *scurr;
 
-	sow_count = spmw_count = siw_count = ssw_count = 0;
+	surf_count = sow_count = spmw_count = siw_count = ssw_count = 0;
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < SURFACE_PER_BOX; j++) {
-			pos = i * SURFACE_PER_BOX + j;
-			surfaces[pos] = &boxes[i].surfaces[j];
+			scurr = &boxes[i].surfaces[j];
 
-			type = test_surface(surfaces[i], wx1, wy1, wx2, wy2);
+			type = test_surface(scurr, wx1, wy1, wx2, wy2);
 			switch (type) {
 				case 0:
 					/* Surface outside window */
@@ -245,19 +245,24 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 					break;
 				case 1:
 					/* Surface partially meets window */
-					spmw[spmw_count] = surfaces[pos];
+					spmw[spmw_count] = scurr;
 					spmw_count ++;
 					break;
 				case 2:
 					/* Surface inside window */
-					siw[siw_count] = surfaces[pos];
+					siw[siw_count] = scurr;
 					siw_count ++;
 					break;
 				case 3:
 					/* Surface surrounds window */
-					ssw[ssw_count] = surfaces[pos];
+					ssw[ssw_count] = scurr;
 					ssw_count ++;
 					break;
+			}
+
+			if (type != 0) {
+				surf[surf_count] = scurr;
+				surf_count++;
 			}
 		}
 	}
@@ -271,12 +276,12 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 			surface_t *withmaxd;
 			float maxd, d;
 
-			withmaxd = ssw[0];
-			maxd = dest(ssw[0]);
-			for (i = 1; i < ssw_count; i++) {
-				d = dest(ssw[i]);
+			withmaxd = surf[0];
+			maxd = dest(surf[0]);
+			for (i = 1; i < surf_count; i++) {
+				d = dest(surf[i]);
 				if (d > maxd) {
-					withmaxd = ssw[i];
+					withmaxd = surf[i];
 					maxd = d;
 				}
 			}
