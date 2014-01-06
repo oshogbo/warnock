@@ -13,6 +13,7 @@
 
 float d = 330.0;
 bool warnock = true;
+bool tricky = false;
 bool pkeys[512];
 
 // http://alienryderflex.com/intersect/
@@ -270,8 +271,8 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 	if (sow_count == SURFACE_PER_BOX * 4)
 		return;
 
-	if (siw_count > 1 || spmw_count > 1 || ssw_count > 1 ||
-	    siw_count + spmw_count + ssw_count > 1) {
+	if (siw_count > 1 || spmw_count > 1 || (tricky ? 1 : ssw_count) > 1 ||
+	    siw_count + spmw_count + (tricky ? 0 : ssw_count) > 1) {
 		if (sqrt((wx2 - wx1) * (wx2 - wx1)) <= 5) {
 			surface_t *withmaxd;
 			float maxd, d;
@@ -419,10 +420,18 @@ main()
 			d -= 1.0;
 		if (d < 0)
 			d = 0.001;
-		PRESSEDKEY(SDLK_1)
+		PRESSEDKEY(SDLK_1) {
+			tricky = false;
 			warnock = true;
-		PRESSEDKEY(SDLK_2)
+		}
+		PRESSEDKEY(SDLK_2) {
+			tricky = false;
 			warnock = false;
+		}
+		PRESSEDKEY(SDLK_3) {
+			tricky = true;
+			warnock = true;
+		}
 
 		SDL_GL_SwapBuffers();
 	}
