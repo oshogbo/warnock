@@ -96,7 +96,7 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	bool r;
 	int i;
 	const coord_t *c[COORDS_PER_SURFACE];
-	float xes[4], yes[4];
+	float xes[COORDS_PER_SURFACE], yes[COORDS_PER_SURFACE];
 
 	for (i = 0; i < COORDS_PER_SURFACE; i++)
 		c[i] = &p->coords[i];
@@ -147,17 +147,13 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	 */
 	if (c[0]->xp < wx2 && c[0]->xp > wx1 && c[0]->yp < wy2 && c[0]->yp > wy1)
 		return (2);
- 
-	 xes[0] = c[0]->xp;
-	 xes[1] = c[1]->xp;
-	 xes[2] = c[2]->xp;
-	 xes[3] = c[3]->xp;
-	 yes[0] = c[0]->yp;
-	 yes[1] = c[1]->yp;
-	 yes[2] = c[2]->yp;
-	 yes[3] = c[3]->yp;
 
-	 if (pnpoly(4, xes, yes, wx1, wy1) == 1)
+	for (i = 0; i < COORDS_PER_SURFACE; i++) {
+		xes[i] = c[i]->xp;
+		yes[i] = c[i]->yp;
+	}
+
+	if (pnpoly(COORDS_PER_SURFACE, xes, yes, wx1, wy1) == 1)
 		return (3);
 
 	/* ok, we don't have other choose this must be polygon from one side */
