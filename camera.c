@@ -69,12 +69,7 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
 	return 1;
 }
 
-/*
- * SRC: http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html#The%20C%20Code
- */
-
-int
-pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
+int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
 {
 	int i, j, c;
 
@@ -197,6 +192,7 @@ static void
 draw_ssw(surface_t *sp, float wx1, float wy1, float wx2, float wy2)
 {
 	surface_t s;
+	int i;
 
 	/* set 2d coords */
 	s.coords[0].xp = wx1;
@@ -212,10 +208,8 @@ draw_ssw(surface_t *sp, float wx1, float wy1, float wx2, float wy2)
 	s.coords[3].yp = wy1;
 
 	/* do we need this ? */
-	s.coords[0].z = 1;
-	s.coords[1].z = 1;
-	s.coords[2].z = 1;
-	s.coords[3].z = 1;
+	for (i = 0; i < COORDS_PER_SURFACE; i++)
+		s.coords[i].z = sp->coords[i].z;
 
 	/* set coolor */
 	s.r = sp->r;

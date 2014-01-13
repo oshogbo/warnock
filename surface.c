@@ -63,8 +63,8 @@ surface_draw(surface_t *p)
 {
 	int i;
 
-	for (i = 0; i < 4; i++)
-		if (p->coords[i].z < 0.01)
+	for (i = 0; i < COORDS_PER_SURFACE; i++)
+		if (p->coords[i].z < 0.001)
 			return;
 
 	glColor3f(p->r, p->g, p->b);
