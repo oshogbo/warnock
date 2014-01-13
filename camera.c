@@ -69,6 +69,17 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
 	return 1;
 }
 
+int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
+{
+  int i, j, c = 0;
+  for (i = 0, j = nvert-1; i < nvert; j = i++) {
+    if ( ((verty[i]>testy) != (verty[j]>testy)) &&
+	 (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
+       c = !c;
+  }
+  return c;
+}
+
 /*
  * 0 - polygon don't have commo part with qube and is not in qube
  * 1 - part of polygon is in qube
@@ -83,6 +94,8 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	bool r;
 	int i;
 	const coord_t *c[COORDS_PER_SURFACE];
+	
+	float xes[4], yes[4];
 
 	for (i = 0; i < COORDS_PER_SURFACE; i++)
 		c[i] = &p->coords[i];
@@ -139,14 +152,25 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	 * two diffrent sites of one point of qube that mean that
 	 * polygon is around qube
 	 */
-	 bx = fmax(c[0]->xp, fmax(c[1]->xp, fmax(c[2]->xp, c[3]->xp)));
+	 /*bx = fmax(c[0]->xp, fmax(c[1]->xp, fmax(c[2]->xp, c[3]->xp)));
 	 sx = fmin(c[0]->xp, fmin(c[1]->xp, fmin(c[2]->xp, c[3]->xp)));
 
 	 by = fmax(c[0]->yp, fmax(c[1]->yp, fmax(c[2]->yp, c[3]->yp)));
 	 sy = fmin(c[0]->yp, fmin(c[1]->yp, fmin(c[2]->yp, c[3]->yp)));
 
 	 if (bx > wx1 && sx < wx1 && by > wy1 && sy < wy1 &&
-	     bx > wx2 && sx < wx2 && by > wy2 && sy < wy2)
+	     bx > wx2 && sx < wx2 && by > wy2 && sy < wy2)*/
+		 
+	 xes[0] = c[0]->xp;
+	 xes[1] = c[1]->xp;
+	 xes[2] = c[2]->xp;
+	 xes[3] = c[3]->xp;
+	 yes[0] = c[0]->yp;
+	 yes[1] = c[1]->yp;
+	 yes[2] = c[2]->yp;
+	 yes[3] = c[3]->yp;
+	 
+	 if (pnpoly(4, xes, yes, wx1, wy1) == 1)
 		return (3);
 
 	/* ok, we don't have other choose this must be polygon from one side */
@@ -322,11 +346,12 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 	if (siw_count == 1) {
 		surface_draw(siw[0]);
 	} else if (spmw_count == 1) {
+		printf("scissors\n");
 		glEnable(GL_SCISSOR_TEST);
 	        glScissor(300 + wx1, 240 + wy1,
 		    (int)sqrt((wx1 - wx2) * (wx1 - wx2)),
 		    (int)sqrt((wy1 - wy2) * (wy1 - wy2)));
-		surface_draw(spmw[0]);
+			surface_draw(spmw[0]);
 		glDisable(GL_SCISSOR_TEST);
 	}
 }
