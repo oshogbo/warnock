@@ -69,7 +69,12 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
 	return 1;
 }
 
-int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
+/*
+ * SRC: http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html#The%20C%20Code
+ */
+
+int
+pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
 {
 	int i, j, c;
 
