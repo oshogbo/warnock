@@ -145,7 +145,8 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	 by = fmax(c[0]->yp, fmax(c[1]->yp, fmax(c[2]->yp, c[3]->yp)));
 	 sy = fmin(c[0]->yp, fmin(c[1]->yp, fmin(c[2]->yp, c[3]->yp)));
 
-	 if (bx > wx1 && sx < wx1 && by > wy1 && sy < wy1)
+	 if (bx > wx1 && sx < wx1 && by > wy1 && sy < wy1 &&
+	     bx > wx2 && sx < wx2 && by > wy2 && sy < wy2)
 		return (3);
 
 	/* ok, we don't have other choose this must be polygon from one side */
@@ -215,13 +216,10 @@ draw_ssw(surface_t *sp, float wx1, float wy1, float wx2, float wy2)
 static double
 dest(surface_t *s)
 {
-	float x, y, z;
 
-	x = s->coords[0].x;
-	y = s->coords[0].y;
-	z = s->coords[0].z;
-
-	return (sqrt(x * x + y * y + z * z));
+	return (sqrt(s->coords[0].x * s->coords[0].x +
+	    s->coords[0].y * s->coords[0].y +
+	    s->coords[0].z * s->coords[0].z));
 }
 
 void
@@ -291,7 +289,7 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 		}
 	}
 
-	if (siw_count + spmw_count > 1) {
+	if (siw_count + spmw_count + (tricky ? 0 : ssw_count) > 1) {
 		if (sqrt((wx2 - wx1) * (wx2 - wx1)) <= 5) {
 			surface_t *withmaxd;
 			float maxd, d;
