@@ -271,8 +271,27 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 	if (sow_count == SURFACE_PER_BOX * 4)
 		return;
 
-	if (siw_count > 1 || spmw_count > 1 || (tricky ? 0 : ssw_count) > 1 ||
-	    siw_count + spmw_count + (tricky ? 0 : ssw_count) > 1) {
+	if (ssw_count == 1) {
+		float maxd, d;
+		bool draws;
+
+		draws = true;
+		maxd = dest(ssw[0]);
+		for (i = 0; i < surf_count; i++) {
+			d = dest(surf[i]);
+			if (d > maxd) {
+				draws = false;
+				break;
+			}
+		}
+
+		if (draws) {
+			draw_ssw(ssw[0], wx1, wy1, wx2, wy2);
+			return;
+		}
+	}
+
+	if (siw_count + spmw_count > 1) {
 		if (sqrt((wx2 - wx1) * (wx2 - wx1)) <= 5) {
 			surface_t *withmaxd;
 			float maxd, d;
@@ -311,8 +330,6 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 		    (int)sqrt((wy1 - wy2) * (wy1 - wy2)));
 		surface_draw(spmw[0]);
 		glDisable(GL_SCISSOR_TEST);
-	} else if (ssw_count == 1) {
-		draw_ssw(ssw[0], wx1, wy1, wx2, wy2);
 	}
 }
 
