@@ -223,10 +223,17 @@ draw_ssw(surface_t *sp, float wx1, float wy1, float wx2, float wy2)
 static double
 dest(surface_t *s)
 {
+	int i = 0;
+	float avgz;
 
-	return (sqrt(s->coords[0].x * s->coords[0].x +
-	    s->coords[0].y * s->coords[0].y +
-	    s->coords[0].z * s->coords[0].z));
+	avgz = 0;
+	for (i = 0; i < COORDS_PER_SURFACE; i++) {
+		avgz += (sqrt(s->coords[i].x * s->coords[i].x +
+		    s->coords[i].y * s->coords[i].y +
+		    s->coords[i].z * s->coords[i].z));
+	}
+
+	return (avgz / COORDS_PER_SURFACE);
 }
 
 void
