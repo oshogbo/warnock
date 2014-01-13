@@ -90,11 +90,9 @@ static int
 test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 {
 	float x,y;
-	float bx, by, sx, sy;
 	bool r;
 	int i;
 	const coord_t *c[COORDS_PER_SURFACE];
-	
 	float xes[4], yes[4];
 
 	for (i = 0; i < COORDS_PER_SURFACE; i++)
@@ -146,21 +144,7 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	 */
 	if (c[0]->xp < wx2 && c[0]->xp > wx1 && c[0]->yp < wy2 && c[0]->yp > wy1)
 		return (2);
-
-	/*
-	 * we know that no line is cut qube, so if two points of polygon are one
-	 * two diffrent sites of one point of qube that mean that
-	 * polygon is around qube
-	 */
-	 /*bx = fmax(c[0]->xp, fmax(c[1]->xp, fmax(c[2]->xp, c[3]->xp)));
-	 sx = fmin(c[0]->xp, fmin(c[1]->xp, fmin(c[2]->xp, c[3]->xp)));
-
-	 by = fmax(c[0]->yp, fmax(c[1]->yp, fmax(c[2]->yp, c[3]->yp)));
-	 sy = fmin(c[0]->yp, fmin(c[1]->yp, fmin(c[2]->yp, c[3]->yp)));
-
-	 if (bx > wx1 && sx < wx1 && by > wy1 && sy < wy1 &&
-	     bx > wx2 && sx < wx2 && by > wy2 && sy < wy2)*/
-		 
+ 
 	 xes[0] = c[0]->xp;
 	 xes[1] = c[1]->xp;
 	 xes[2] = c[2]->xp;
@@ -169,7 +153,7 @@ test_surface(const surface_t *p, float wx1, float wy1, float wx2, float wy2)
 	 yes[1] = c[1]->yp;
 	 yes[2] = c[2]->yp;
 	 yes[3] = c[3]->yp;
-	 
+
 	 if (pnpoly(4, xes, yes, wx1, wy1) == 1)
 		return (3);
 
@@ -351,7 +335,7 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 	        glScissor(300 + wx1, 240 + wy1,
 		    (int)sqrt((wx1 - wx2) * (wx1 - wx2)),
 		    (int)sqrt((wy1 - wy2) * (wy1 - wy2)));
-			surface_draw(spmw[0]);
+		surface_draw(spmw[0]);
 		glDisable(GL_SCISSOR_TEST);
 	}
 }
