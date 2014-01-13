@@ -71,13 +71,16 @@ lineSegmentIntersection(float Ax, float Ay, float Bx, float By, float Cx,
 
 int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy)
 {
-  int i, j, c = 0;
-  for (i = 0, j = nvert-1; i < nvert; j = i++) {
-    if ( ((verty[i]>testy) != (verty[j]>testy)) &&
-	 (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
-       c = !c;
-  }
-  return c;
+	int i, j, c;
+
+	for (c = 0, i = 0, j = nvert-1; i < nvert; j = i++) {
+		if (((verty[i] > testy) != (verty[j] > testy)) &&
+		    (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) /
+		    (verty[j]-verty[i]) + vertx[i])) {
+			c = !c;
+		}
+	}
+	return (c);
 }
 
 /*
@@ -330,7 +333,6 @@ draw_boxes_warnock(box_t *boxes, float wx1, float wy1, float wx2, float wy2)
 	if (siw_count == 1) {
 		surface_draw(siw[0]);
 	} else if (spmw_count == 1) {
-		printf("scissors\n");
 		glEnable(GL_SCISSOR_TEST);
 	        glScissor(300 + wx1, 240 + wy1,
 		    (int)sqrt((wx1 - wx2) * (wx1 - wx2)),
@@ -358,7 +360,6 @@ draw_scene(box_t *boxes)
 	for (i = 0; i < 4; i++)
 		box_project(&boxes[i], d);
 
-	printf("==========================\n");
 	if (warnock)	/* Draw boxes with Warnock Depth Test */
 		draw_boxes_warnock(boxes, -300, -240, 300, 240);
 	else		/* or not */
