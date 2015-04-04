@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -Wextra
-TARGET=a.out
+TARGET=warnock.out
 LIBS=-lm -lGL -lSDL
 
 SRC=camera.c box.c coord.c surface.c
