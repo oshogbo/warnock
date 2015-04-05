@@ -1,6 +1,9 @@
 # warnock
 Warnock algorithm and drawing 3d objects in 2d space.
 
+# Required
+OpenGL and SDL library.
+
 # Building
 
     $ make
