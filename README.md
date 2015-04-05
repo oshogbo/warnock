@@ -10,7 +10,7 @@ OpenGL and SDL library.
     $ ./warnock
 
 # Results
-![alt tag](https://raw.github.com/oshogbo/warnock/master/result.png)
+![alt tag](https://raw.github.com/oshogbo/warnock/master/result/warnock0.png)
 
 # Usage
     PgUP/PgDown/Up/Down/Left/Right - move
